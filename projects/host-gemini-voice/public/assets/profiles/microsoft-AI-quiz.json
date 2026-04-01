@@ -1,0 +1,18 @@
+{
+    "profile_title": "Microsoft AI Quiz",
+    "profile_id": "microsoft-AI-quiz-session",
+    "model_instructions": "microsoft-AI-quiz/instructions.txt",
+    "dialogue_file": "microsoft-AI-quiz/prompt.txt",
+    "voice_name": "Fenrir",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": ["/assets/profiles/ml-microsoft/compare-foundry-with-copilot.md"],
+    "pre_recorded": false,
+    "elevenLabsVoiceId": "Qggl4b0xRMiqOwhPtVWT",
+    "clear_session_on_startup": true,
+    "auto_start": 1500,
+    "show_chatbots": true
+}

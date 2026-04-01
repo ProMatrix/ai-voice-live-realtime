@@ -1,0 +1,17 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <h3>Assistant Conversation</h3>
+  </div>
+  <div class="chat-history" #chatHistoryContainer>
+    <!-- Messages will be injected here via the ChatHistoryService -->
+  </div>
+  <div class="chat-input-area">
+    <input 
+      type="text" 
+      [placeholder]="'Type a message...'" 
+      (keyup.enter)="onSendMessage($event)" 
+      #messageInput 
+    />
+    <button (click)="onSendMessage(messageInput.value); messageInput.value=''">Send</button>
+  </div>
+</div>

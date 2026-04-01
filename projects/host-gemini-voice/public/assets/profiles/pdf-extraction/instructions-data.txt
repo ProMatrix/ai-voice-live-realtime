@@ -1,0 +1,26 @@
+
+    // let prompt = '';
+    // prompt += this.dataInstructions + ' ';
+    // prompt += 'What is the File # of the appraisal report? ';
+    // prompt += 'Who is the client? ';    
+    // prompt += 'What state is the property located in? ';
+    // prompt += 'What county is the property located in? ';
+    // prompt += 'How many total acres? ';
+    // prompt += 'How many acres are cropland or tillable cropland? ';
+    // prompt += 'Who is the originating bank and/or Agri-Access? ';
+    // prompt += 'Is the purpose and intent of the report for lending purposes? ';
+    // prompt += 'Is there an engagement letter? ';
+    // prompt += 'Is the legal description of the property included in the appraisal? ';
+    // prompt += 'Is there legal and physical access to the property from a public right-of-way? ';    
+    // prompt += 'Are the property tax parcel numbers included in the appraisal? ';    
+    // prompt += 'Are there pictures of the subject property? ';    
+    // prompt += 'Are there aerial maps of the property? ';    
+    // prompt += 'Are there improvements on the subject property? ';    
+    // prompt += 'If there are improvements, is there value given? ';    
+    // prompt += 'Is the subject property irrigated? ';    
+    // prompt += 'Are there any easements, leases, restrictions or covenants on the subject property? ';    
+    // prompt += 'What is the Highest and Best use of the property as vacant? ';    
+    // prompt += 'What is the Highest and Best use of the property as improved? ';    
+    // prompt += 'Return the answer in an array of JSON objects with the following keys: fileNumber, client, state, county, totalAcres, croplandAcres, originatingBank, purposeAndIntent, engagementLetter, legalDescriptionIncluded, accessToProperty, taxParcelNumbersIncluded, picturesIncluded, aerialMapsIncluded, improvementsIncluded, improvementsValueIncluded, irrigated, easementsLeasesRestrictionsCovenantsIncluded, highestAndBestUseAsVacant, highestAndBestUseAsImproved. '; 
+    // prompt += 'If there is a single file, return an array of JSON objects with only one JSON object in the collection. '; 
+    // prompt += 'If there are multiple files, return an array of JSON objects with multiple JSON objects in the collection. ';

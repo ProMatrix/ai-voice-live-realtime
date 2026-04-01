@@ -1,0 +1,69 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "paths": {
+      "llm-common": ["./dist/llm-common"],
+      "llm-google": ["./dist/llm-google"],
+      "llm-microsoft": ["./dist/llm-microsoft"],
+      "shared-ux": ["./dist/shared-ux"]
+    },
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/llm-common/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/llm-common/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/llm-microsoft/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/llm-microsoft/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/llm-google/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/llm-google/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/shared-ux/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/shared-ux/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/host-azure-voice/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/host-azure-voice/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/host-gemini-voice/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/host-gemini-voice/tsconfig.spec.json"
+    }
+  ]
+}

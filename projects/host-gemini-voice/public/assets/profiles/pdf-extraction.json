@@ -1,0 +1,23 @@
+{
+    "profile_title": "Appraisal Assistant",
+    "profile_id": "appraisal-session",
+    "model_name": "appraisal-model",
+    "model_instructions": "pdf-extraction/instructions-session.md",
+    "data_instructions": "pdf-extraction/instructions-data.md",
+    "data_summary_template": "pdf-extraction/appraisal-summary-template.html",  
+    "dialogue_file": "",
+    "voice_name": "Zephyr",
+    "pdf_upload": true,
+    "pdf_summary": true,
+    "pdf_flush": true,
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": [],
+    "pre_recorded": false,
+    "clear_session_on_startup": false,
+    "show_side_panel": false,    
+    "show_chatbots": false
+}

@@ -1,0 +1,19 @@
+{
+    "profile_title": "Realtime AI Demo",
+    "profile_id": "software-demo-pre-session",
+    "voice_api_instructions": "software-demo-pre/voiceInstructions.md",
+    "dialogue_file": "software-demo-pre/dialogue-io.json",
+    "voice_name": "en-US-PhoebeMultilingualNeural",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": ["software-demo-pre/dialogue-io.json"],
+    "pre_recorded": true,
+    "turn_complete": false,
+    "inputs_opening_utterance": "Hello Rachelle! I would like for you to be my co-user.",
+    "elevenLabsVoiceId": "F9Q7NaWYTVe9MfMzZLwq",
+    "clear_session_on_startup": true,
+    "show_chatbots": true
+}

@@ -1,0 +1,16 @@
+@use '../../styles/theme' as *;
+
+.audio-meter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  
+  canvas {
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--header-bg, #0078d4) 0%, transparent 70%);
+    transition: transform 0.1s ease-out;
+  }
+}

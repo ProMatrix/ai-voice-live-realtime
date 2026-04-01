@@ -1,0 +1,7 @@
+    Resolve Audio Playback Race Condition
+When I try running the resetDatabase it seems to work, but I get this error when trying to use the audio generated:
+audio.interface.service.ts:305 
+ Error playing audio from IndexedDB: Error: Audio data not found for Delaware. in IndexedDB.
+
+https://gemini.google.com/app/32ef37122dcb6523
+

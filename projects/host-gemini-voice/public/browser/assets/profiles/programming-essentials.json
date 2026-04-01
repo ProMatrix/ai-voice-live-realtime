@@ -1,0 +1,19 @@
+{
+    "profile_title": "Programming AI",
+    "profile_id": "programming-essentials-session",
+    "model_name": "programming-essentials",
+    "model_instructions": "programming-essentials/instructions.md",
+    "dialogue_file": "",
+    "voice_name": "Zephyr",
+    "pdf_file": "programming-essentials/JavaScript_Programming_Essentials_for_AI-V1.pdf",
+    "pdf_flush": false,
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": [],
+    "pre_recorded": false,
+    "clear_session_on_startup": true,
+    "show_chatbots": true
+}

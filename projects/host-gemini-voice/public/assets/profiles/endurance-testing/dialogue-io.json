@@ -1,0 +1,22 @@
+[
+  {
+    "delay": 1.5,
+    "direction": "Input",
+    "utterance": "OK... Start the timer!"
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "Time elapsed: 00:00:01"
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "Elapse time?"
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "Good-bye!"
+  }
+]

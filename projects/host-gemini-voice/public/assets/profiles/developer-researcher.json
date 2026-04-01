@@ -1,0 +1,17 @@
+{
+    "profile_title": "AI Developer Researcher",
+    "model_instructions": "developer-researcher/instructions.md",
+    "dialogue_file": "",
+    "voice_name": "Zephyr",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": [],
+    "pre_recorded": false,
+    "go_bridge": "",
+    "clear_session_on_startup": false,
+    "show_side_panel": true,
+    "show_chatbots": true
+}

@@ -1,0 +1,500 @@
+<div class="container-center-horizontal">
+  <div class="prototype screen">
+    <div class="screen-background"></div>
+
+    <div class="control-panel">
+      <div class="section">
+        <div class="button-group">
+          <button
+            class="control-button"
+            id="screenShareButton"
+            title="Screen Sharing: Off"
+            [style.visibility]="'hidden'"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.52.47 1.2.77 1.96.77 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81c-.52-.47-1.2-.77-1.96-.77-1.66 0-3 1.34-3 3s1.34 3 3 3c.76 0 1.44-.3 1.96-.77l7.05 4.11c-.05.23-.09.46-.09.7 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="button-group">
+          <button class="control-button" id="stopRecordingButton" title="Stop Session Recording">
+            <svg viewBox="0 0 24 24">
+              <path d="M6 6h12v12H6z" />
+            </svg>
+          </button>
+          <button class="control-button" id="pauseRecordingButton" title="Pause Session Recording">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 5h3v14H8zm5 0h3v14h-3z" />
+            </svg>
+          </button>
+
+          <button
+            class="control-button"
+            id="uploadPdfButton"
+            title="Upload Pdf(s)"
+            [style.display]="showUploadButton() ? 'inline-block' : 'none'"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
+            </svg>
+          </button>
+
+          <button
+            class="control-button"
+            id="startRecordButton"
+            title="Start Session Recording"
+            [style.display]="showStartRecordButton() ? 'inline-block' : 'none'"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5z"
+              />
+            </svg>
+          </button>
+
+          <button
+            class="control-button"
+            id="startPlaybackButton"
+            title="Start Playback"
+            [style.display]="showStartPlaybackButton() ? 'inline-block' : 'none'"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="button-group">
+          <button class="control-button" id="speakerButton" title="Audio Output: Off">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+              />
+            </svg>
+          </button>
+          <button class="control-button" id="trashButton" title="Remove Session Recording">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+              />
+            </svg>
+          </button>
+
+          <div
+            class="control-progress"
+            title="File(s) Upload Progress"
+            [style.visibility]="getProgressIndicatorVisibility()"
+          >
+            <svg width="46" height="46" viewBox="0 0 40 40">
+              <circle stroke="#eee" stroke-width="3" fill="transparent" r="16" cx="20" cy="20" />
+              <circle
+                id="progress-indicator"
+                class="progress-ring__circle"
+                stroke="#3F7C9A"
+                stroke-width="7"
+                stroke-linecap="round"
+                fill="transparent"
+                r="16"
+                cx="20"
+                cy="20"
+              />
+              <text
+                id="progress-text"
+                x="50%"
+                y="50%"
+                text-anchor="middle"
+                dominant-baseline="central"
+                class="percentage-label"
+              >
+                0
+              </text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="button-group">
+          <button
+            class="control-button"
+            id="hideChatbotButton"
+            title="Chatbot Images: On"
+            [style.visibility]="profile.show_chatbots ? 'visible' : 'hidden'"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <circle cx="12" cy="5" r="1.6" />
+              <!-- head/body -->
+              <rect x="6" y="7" width="12" height="10" rx="2" />
+              <!-- eyes -->
+              <circle cx="10" cy="12" r="1.25" />
+              <circle cx="14" cy="12" r="1.25" />
+              <!-- mouth -->
+              <rect x="9" y="15" width="6" height="1.6" rx="0.8" />
+              <!-- arms -->
+              <rect x="4.5" y="10" width="1.5" height="4" rx="0.75" />
+              <rect x="18" y="10" width="1.5" height="4" rx="0.75" />
+            </svg>
+          </button>
+
+          <div class="control-button-slot">
+            <button
+              class="control-button snapshot-indicator-button"
+              type="button"
+              title="Taking snapshot"
+              disabled
+              tabindex="-1"
+              [class.active]="snapshotIndicatorService.isCameraOff() || snapshotIndicatorService.isCameraFading()"
+              [class.is-visible]="snapshotIndicatorService.isCameraIndicatorVisible()"
+              [class.is-fading]="snapshotIndicatorService.isCameraFading()"
+              [attr.aria-hidden]="!snapshotIndicatorService.isCameraIndicatorVisible()"
+            >
+              <svg
+                class="snapshot-camera-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                [class.icon-visible]="snapshotIndicatorService.isCameraOff() || snapshotIndicatorService.isCameraFading()"
+              >
+                <g transform="translate(12 12) scale(1.18) translate(-12 -12)">
+                  <path d="M6 8h2.2l1.3-1.6h4.9L15.7 8H18a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" />
+                  <circle cx="12" cy="13" r="3.2" />
+                  <path d="m17.1 5.1.7-1.7.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7z" />
+                </g>
+              </svg>
+
+              <svg
+                class="snapshot-camera-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                [class.icon-visible]="snapshotIndicatorService.isCameraFlashOn()"
+              >
+                <g transform="translate(12 12) scale(1.18) translate(-12 -12)">
+                  <path d="M6 8h2.2l1.3-1.6h4.9L15.7 8H18a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" />
+                  <circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6" />
+                  <circle cx="17.2" cy="10.3" r="1" />
+                </g>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="snapshot-frame" id="imagePreviewContainer">
+      <img class="live-snapshot-frame" id="imagePreview" src="#" alt="Image preview" />
+    </div>
+
+    <video class="video-frame" id="screen-view" autoplay></video>
+    <canvas class="canvas" id="capture-canvas"></canvas>
+
+    <div class="chat-history-container">
+      <lib-chat-window></lib-chat-window>
+    </div>
+
+      <div class="audio-levels">
+        <div class="audio-level">
+            <div id="userbot-audio-level" class="level-meter mic-level">
+            <svg class="level-circle" width="160" height="160" viewBox="0 0 120 120">
+              <circle
+                class="level-circle-bg"
+                cx="60"
+                cy="60"
+                r="55"
+              />
+              <circle
+                class="level-circle-value"
+                cx="60"
+                cy="60"
+                r="55"
+                stroke-dasharray="314"
+                [attr.stroke-dashoffset]="(1 - liveInterface.audioLevel / 100) * 314"
+              />
+            </svg>
+          </div>
+        </div>
+        <div class="audio-level">
+          <div id="assistantbot-audio-level" class="level-meter speaker-level">
+            <svg class="level-circle" width="150" height="150" viewBox="0 0 120 120">
+              <circle
+                class="level-circle-bg"
+                cx="60"
+                cy="60"
+                r="57"
+              />
+              <circle
+                class="level-circle-value"
+                cx="60"
+                cy="60"
+                r="57"
+                stroke-dasharray="314"
+                [attr.stroke-dashoffset]="(1 - liveInterface.outputAudioLevel / 100) * 314"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>    
+
+    @if (isPanelVisible('page-links')) {
+      <div
+        class="page-links-container fade-in"
+        id="page-links-container"
+      ></div>
+    }
+
+    @if (isPanelVisible('voice-text-input')) {
+      <div
+        class="voice-text-input-container fade-in"
+        id="voice-text-input-container"
+      >
+        <textarea
+          #voiceTextInput
+          id="voiceTextInput"
+          class="voice-text-input"
+          placeholder="Type your message here..."
+          (keydown.enter)="onSendText(voiceTextInput.value); voiceTextInput.value = ''; $event.preventDefault()"
+        ></textarea>
+        <button
+          id="sendTextButton"
+          class="send-button"
+          title="Send Message"
+          (click)="onSendText(voiceTextInput.value); voiceTextInput.value = ''"
+        >
+          <svg
+            #sendIcon
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </button>
+      </div>
+    }
+
+    @if (isPanelVisible('settings')) {
+      <div
+        class="settings-container fade-in"
+        id="settings-container"
+      >
+        <div class="settings-content">
+          <label for="voice-api-key" class="controls-label">Voice Api Key:</label>
+          <input
+            id="voice-api-key"
+            type="password"
+            class="voice-api-key"
+            [value]="voiceApiKey"
+            (input)="onApiKeyInput($any($event.target).value)"
+            placeholder="Paste your Voice API Key here"
+          />
+          <label for="voice-api-endpoint" class="controls-label">Voice Api Endpoint:</label>
+          <input
+            id="voice-api-endpoint"
+            class="voice-api-endpoint"
+            [value]="voiceApiEndpoint"
+            (input)="onApiEndpointInput($any($event.target).value)"
+            placeholder="Paste your Voice API Endpoint here"
+          />
+          <label for="vision-api-key" class="controls-label">Vision Api Key:</label>
+          <input
+            id="vision-api-key"
+            type="password"
+            class="vision-api-key"
+            [value]="visionApiKey"
+            (input)="onVisionApiKeyInput($any($event.target).value)"
+            placeholder="Paste your Vision API Key here"
+          />
+          <div class="settings-field-row vision-settings-row">
+            <div class="settings-field-group vision-endpoint-group">
+              <label for="vision-api-endpoint" class="controls-label">Vision Api Endpoint:</label>
+              <input
+                id="vision-api-endpoint"
+                class="vision-api-endpoint"
+                [value]="visionApiEndpoint"
+                (input)="onVisionApiEndpointInput($any($event.target).value)"
+                placeholder="Paste your Vision API Endpoint here"
+              />
+            </div>
+
+            <div class="settings-field-group vision-deployment-group">
+              <label for="vision-api-deployment" class="controls-label">Vision Api Deployment:</label>
+              <input
+                id="vision-api-deployment"
+                class="vision-api-deployment"
+                [value]="visionApiDeployment"
+                (input)="onVisionApiDeploymentInput($any($event.target).value)"
+                placeholder="Paste your Vision API Deployment here"
+              />
+            </div>
+          </div>
+
+
+          <div class="settings-action-row settings-save-row">
+            <button
+              id="saveSettingsButton"
+              type="button"
+              class="save-settings-button settings-save-button-inline"
+              [class.is-saved]="apiKeySaved"
+              [attr.title]="apiKeySaved ? 'Settings saved successfully' : 'Save Settings'"
+              (click)="onSaveSettings()"
+            >
+              {{ apiKeySaved ? 'Settings Saved' : 'Save Settings' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (profile.show_chatbots) {
+      <img
+        class="userbot-online-1 fade-in"
+        id="userbot-image"
+        src="assets/img/userbot-still.gif"
+        alt="userbot-online-1"
+      />
+
+      @if (profile.show_side_panel) {
+        <img
+          class="assistantbot-online-1 fade-in"
+          id="assistantbot-image"
+          src="assets/img/assistantbot-still.gif"
+          alt="assistantbot-online-1"
+        />
+      }
+
+      @if (!profile.show_side_panel) {
+        <img
+          class="assistantbot-online-1 fade-in"
+          id="assistantbot-image"
+          src="assets/img/assistantbot-still-disconnected.gif"
+          alt="assistantbot-online-1"
+        />
+      }
+    }
+
+    <div id="session-title" class="session-title long-fade-out">Azure Voice Live</div>
+    <div
+      id="userSpokenMessage"
+      class="spokenMessage fade-in"
+      [class.show-copy-actions]="showSpokenCopyButtons"
+    >
+      <button
+        type="button"
+        class="spoken-message-copy-button user-copy-button"
+        (click)="copySpokenMessage('user', $event)"
+      >
+        Copy to Clipboard
+      </button>
+      <span id="userSpokenMessageText" class="spoken-message-text"></span>
+    </div>
+    <div
+      id="aiSpokenMessage"
+      class="spokenMessage fade-in"
+      [class.show-copy-actions]="showSpokenCopyButtons"
+    >
+      <button
+        type="button"
+        class="spoken-message-copy-button ai-copy-button"
+        (click)="copySpokenMessage('ai', $event)"
+      >
+        Copy to Clipboard
+      </button>
+      <span id="aiSpokenMessageText" class="spoken-message-text"></span>
+    </div>
+
+    <div class="viewing-options-panel">
+      <div class="version-section" title="Current Application Version">
+        <span class="controls-info">{{ version }}</span>
+      </div>
+      <div class="button-group">
+        <button class="control-button" id="transcriptionButton" title="Transcriptions: On">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M5 5.5A3.5 3.5 0 0 1 8.5 2h7A3.5 3.5 0 0 1 19 5.5v5A3.5 3.5 0 0 1 15.5 14H11l-4.5 4v-4.35A3.48 3.48 0 0 1 5 10.5v-5Z"
+            />
+            <rect x="8" y="6.75" width="8" height="1.35" rx="0.675" fill="#fff" />
+            <rect x="8" y="9.45" width="6.2" height="1.35" rx="0.675" fill="#fff" />
+          </svg>
+        </button>
+        <button
+          class="control-button fade-in"
+            id="showVisionButton"
+          title="Vision: Off"
+            [style.visibility]="isShowVisionButtonVisible ? 'visible' : 'hidden'"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M1.5 12S5.5 5.5 12 5.5 22.5 12 22.5 12 18.5 18.5 12 18.5 1.5 12 1.5 12Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+            <circle cx="12" cy="12" r="3.7"></circle>
+          </svg>
+        </button>
+      </div>
+
+      <div class="section">
+        <div class="button-group radio-group">
+          <button
+            class="control-button"
+            [class.active]="isPanelVisible('page-links')"
+            (click)="onOutputLinksPanelClick()"
+            [attr.disabled]="canOpenOutputLinksPanel() ? null : true"
+            title="Show output links panel"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"
+              />
+            </svg>
+          </button>
+          <button
+            class="control-button"
+            [class.active]="isPanelVisible('voice-text-input')"
+            (click)="showPanel('voice-text-input')"
+            title="Show text input panel"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"
+              />
+            </svg>
+          </button>
+          <button
+            class="control-button"
+            [class.active]="isPanelVisible('settings')"
+            (click)="showPanel('settings')"
+            title="Show settings panel"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2 3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="session-time-section" title="Session Time Elapsed">
+        <span class="controls-info">{{ sessionTime }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+

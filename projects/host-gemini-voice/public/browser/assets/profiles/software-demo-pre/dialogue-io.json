@@ -1,0 +1,87 @@
+[
+  {
+    "delay": 1.5,
+    "direction": "Input",
+    "utterance": "Hello Rachelle! I would like for you to be my co-host."
+  },
+  {
+    "delay": 0,
+    "direction": "Input",
+    "utterance": "I'm doing a quick demonstration of: 'real-time AI.' and I need your help."
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "Sounds interesting! Sure. I'll be your co-host. Is this about streaming audio and video?"
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "Yes. Using the microphone and speakers will put our conversation in real-time. And that’s the key benefit of using real-time AI."
+  },
+  {
+    "delay": 0,
+    "direction": "Input",
+    "utterance": "It might make sense to break down the meaning of real-time in the context of AI."
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "Technically, there is no such thing as real-time.  But in terms of trying to emulate what might feel like real-time, I know what you mean!"
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "The core technology is bidirectional, multimodal streaming. And in the demo, there's a lot of things happening. All in real-time!"
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "Streaming audio to and from the AI... Streaming text transcriptions to and from the AI... Streaming video and, uploading a PDF document!"
+  },
+  {
+    "delay": 1,
+    "direction": "Output",
+    "utterance": "Sounds like a lot of moving parts."
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "The PDF e-book is about railway timetabling and capacity. It also has a lot of moving parts! The PDF file is an e-book that will be used in the demonstration, and is a guide to designing a scheduling application for a railway system. "
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "I know about this e-book. I've used it a lot in presentations. The book is 84 pages and filled with formulas and diagrams and most anything related to \"railway timetabling and capacity\"."
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "The main features that I'm going to demonstrate are the multimodal bi-directional streaming and barge-in."
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "Barge-in is becoming a necessity for real-time AI. It allows the user to  interrupt the incoming audio in order to save time. It's a way to interrupt the AI.  This is a huge time saver when you already know what the AI is telling you."
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "Here is how it works. Because you have an audio stream going in and out of the AI at the same time, it's possible to cut off, basically interrupting the AI from finishing its utterance."
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "Technically what this does is force a turn. A turn is a change in the conversation or direction of the conversation."
+  },
+  {
+    "delay": 1,
+    "direction": "Input",
+    "utterance": "Let's kick off a demonstration."
+  },
+  {
+    "delay": 0,
+    "direction": "Output",
+    "utterance": "Sounds good. Let's go!"
+  }
+]

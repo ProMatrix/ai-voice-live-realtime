@@ -1,0 +1,20 @@
+{
+    "profile_title": "Microsoft AI Discussion",
+    "profile_id": "microsoft-AI-discussion-session",    
+    "voice_api_instructions": "microsoft-AI-discussion/voiceInstructions.md",
+    "dialogue_file": "microsoft-AI-discussion/dialogue-io.json",
+    "voice_name": "en-US-DerekMultilingualNeural",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": ["microsoft-AI-discussion/dialogue-io.json"],
+    "pre_recorded": true,
+    "turn_complete": false,
+    "inputs_opening_utterance": "Hello! I'm your user today, Cinda!",
+    "go_bridge": "microsoft-AI-quiz",
+    "elevenLabsVoiceId": "Qggl4b0xRMiqOwhPtVWT",
+    "clear_session_on_startup": true,
+    "show_chatbots": true
+}

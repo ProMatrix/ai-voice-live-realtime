@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{File #}</title>
+    <style>
+      :root {
+        --compeer-green: #005a31; /* Compeer Primary Green */
+        --compeer-gold: #ffc72c; /* Compeer Gold Accent */
+        --light-bg: #f9f9f9;
+        --border-color: #d1d1d1;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* 75% Page Scaling */
+      html {
+        zoom: 0.75;
+        -moz-transform-origin: 0 0;
+        transform-origin: 0 0;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 40px;
+        background-color: #fff;
+        cursor: default; /* Enforce default cursor everywhere */
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      /* Top Panel with Rounded Corners */
+      .header {
+        background-color: var(--compeer-green);
+        color: white;
+        padding: 30px;
+        border-bottom: 6px solid var(--compeer-gold);
+        margin-bottom: 30px;
+        border-radius: 20px; /* Rounded corners for the top panel */
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .summary-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+      }
+
+      .section {
+        border: 1px solid var(--border-color);
+        padding: 20px;
+        border-radius: 8px;
+        background-color: white;
+      }
+
+      .section-title {
+        color: var(--compeer-green);
+        font-weight: bold;
+        font-size: 1.1em;
+        border-bottom: 2px solid var(--compeer-gold);
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+      }
+
+      /* High Level Information Table Styling (3-cell layout) */
+      .high-level-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .high-level-table td {
+        padding: 8px 4px;
+      }
+
+      .field-label {
+        text-align: right; /* Right justified field names */
+        font-weight: bold;
+        color: #555;
+        width: 45%;
+      }
+
+      .spacer-cell {
+        width: 3%;
+      }
+
+      .field-value {
+        text-align: left; /* Left justified values */
+        color: #000;
+        width: 45%;
+      }
+
+      /* General Field Layout for other sections */
+      .field {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 4px;
+      }
+
+      .label {
+        font-weight: bold;
+        color: #555;
+      }
+      .value {
+        color: #000;
+      }
+
+      .full-width {
+        grid-column: span 2;
+        background-color: var(--light-bg);
+      }
+
+      /* Prevent editing interaction */
+      * {
+        pointer-events: auto;
+      }
+      input,
+      select,
+      textarea {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Property Appraisal Summary</h1>
+      <p style="margin-top: 10px; font-weight: bold">Prepared for Golden Shield Financial</p>
+    </div>
+
+    <div class="summary-container">
+      <div class="section full-width">
+        <div class="section-title">High-Level Information</div>
+        <table class="high-level-table">
+          <tr title="page {File # Page}: File #">
+            <td class="field-label">File #</td>
+            <td class="spacer-cell"></td>
+            <td class="field-value">{File #}</td>
+          </tr>
+          <tr title="page {Client Page}: Client Name">
+            <td class="field-label">Client</td>
+            <td class="spacer-cell"></td>
+            <td class="field-value">{Client}</td>
+          </tr>
+          <tr title="page {State Page}: State">
+            <td class="field-label">State</td>
+            <td class="spacer-cell"></td>
+            <td class="field-value">{State}</td>
+          </tr>
+          <tr title="page {County Page}: County">
+            <td class="field-label">County</td>
+            <td class="spacer-cell"></td>
+            <td class="field-value">{County}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Acreage & Land Details</div>
+        <div class="field" title="page {Total Acres Page}: Total Acres">
+          <span class="label">Total Acres:</span>
+          <span class="value">{Total Acres}</span>
+        </div>
+        <div class="field" title="page {Cropland Acres Page}: Cropland Acres">
+          <span class="label">Cropland Acres:</span>
+          <span class="value">{Cropland Acres}</span>
+        </div>
+        <div class="field" title="page {Irrigated Included Page}: Irrigation details">
+          <span class="label">Irrigated:</span>
+          <span class="value">{Irrigated Included}</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Lending Information</div>
+        <div class="field" title="page {Originating Bank/Agri-Access Page}: Originating Bank">
+          <span class="label">Originating Bank:</span>
+          <span class="value">{Originating Bank/Agri-Access}</span>
+        </div>
+        <div class="field" title="page {Purpose and Intent for Lending Page}: Purpose and Intent">
+          <span class="label">Purpose and Intent:</span>
+          <span class="value">{Purpose and Intent for Lending}</span>
+        </div>
+        <div class="field" title="page {Engagement Letter Included Page}: Engagement Letter">
+          <span class="label">Engagement Letter:</span>
+          <span class="value">{Engagement Letter Included}</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Legal & Access Compliance</div>
+        <div class="field" title="page {Legal Description Included Page}: Legal Description">
+          <span class="label">Legal Description:</span>
+          <span class="value">{Legal Description Included}</span>
+        </div>
+        <div class="field" title="page {Legal and Physical Access from Public Right-of-Way Page}: Public Access details">
+          <span class="label">Public Right-of-Way Access:</span>
+          <span class="value">{Legal and Physical Access from Public Right-of-Way}</span>
+        </div>
+        <div class="field" title="page {Tax Parcel Numbers Included Page}: Tax Parcel Numbers">
+          <span class="label">Tax Parcel Numbers:</span>
+          <span class="value">{Tax Parcel Numbers Included}</span>
+        </div>
+        <div class="field" title="page {Easements/Leases/Restrictions/Covenants Included Page}: Easement details">
+          <span class="label">Easements/Leases/Restrictions:</span>
+          <span class="value">{Easements/Leases/Restrictions/Covenants Included}</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Exhibits & Improvements</div>
+        <div class="field" title="page {Pictures of Subject Property Included Page}: Pictures">
+          <span class="label">Pictures of Property:</span>
+          <span class="value">{Pictures of Subject Property Included}</span>
+        </div>
+        <div class="field" title="page {Aerial Maps Included Page}: Aerial Maps">
+          <span class="label">Aerial Maps:</span>
+          <span class="value">{Aerial Maps Included}</span>
+        </div>
+        <div class="field" title="page {Improvements on Subject Property Included Page}: Improvements details">
+          <span class="label">Improvements on Property:</span>
+          <span class="value">{Improvements on Subject Property Included}</span>
+        </div>
+        <div class="field" title="page {Value Given for Improvements Included Page}: Improvement Value details">
+          <span class="label">Value Given for Improvements:</span>
+          <span class="value">{Value Given for Improvements Included}</span>
+        </div>
+      </div>
+
+      <div class="section full-width">
+        <div class="section-title">Highest and Best Use Determination</div>
+        <div class="field" title="page {Highest and Best Use as Vacant Page}: Highest and Best Use as Vacant">
+          <span class="label">Highest and Best Use (Vacant):</span>
+          <span class="value">{Highest and Best Use as Vacant}</span>
+        </div>
+        <div class="field" title="page {Highest and Best Use as Improved Page}: Highest and Best Use as Improved">
+          <span class="label">Highest and Best Use (Improved):</span>
+          <span class="value">{Highest and Best Use as Improved}</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

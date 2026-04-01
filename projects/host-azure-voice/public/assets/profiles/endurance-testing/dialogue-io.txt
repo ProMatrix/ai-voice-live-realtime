@@ -1,0 +1,4 @@
+Delay: 1.5; Input: "OK... Start the timer!"
+Delay: 0.0; Output: "Time elapsed: 00:00:01"
+Delay: 1.0; Input: "Elapse time?"
+Delay: 0.0; Output: "Good-bye!"

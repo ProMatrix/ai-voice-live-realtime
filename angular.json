@@ -1,0 +1,248 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "llm-common": {
+      "projectType": "library",
+      "root": "projects/llm-common",
+      "sourceRoot": "projects/llm-common/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/llm-common/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/llm-common/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/llm-common/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "llm-microsoft": {
+      "projectType": "library",
+      "root": "projects/llm-microsoft",
+      "sourceRoot": "projects/llm-microsoft/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/llm-microsoft/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/llm-microsoft/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/llm-microsoft/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "llm-google": {
+      "projectType": "library",
+      "root": "projects/llm-google",
+      "sourceRoot": "projects/llm-google/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/llm-google/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/llm-google/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/llm-google/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "shared-ux": {
+      "projectType": "library",
+      "root": "projects/shared-ux",
+      "sourceRoot": "projects/shared-ux/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/shared-ux/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/shared-ux/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/shared-ux/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "host-azure-voice": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/host-azure-voice",
+      "sourceRoot": "projects/host-azure-voice/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/host-azure-voice/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/host-azure-voice/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/host-azure-voice/public"
+              }
+            ],
+            "styles": ["projects/host-azure-voice/src/styles.scss"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2gb",
+                  "maximumError": "2gb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "host-azure-voice:build:production"
+            },
+            "development": {
+              "buildTarget": "host-azure-voice:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "host-gemini-voice": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/host-gemini-voice",
+      "sourceRoot": "projects/host-gemini-voice/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/host-gemini-voice/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/host-gemini-voice/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/host-gemini-voice/public"
+              }
+            ],
+            "styles": ["projects/host-gemini-voice/src/styles.scss"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2gb",
+                  "maximumError": "2gb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "host-gemini-voice:build:production"
+            },
+            "development": {
+              "buildTarget": "host-gemini-voice:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    }
+  }
+}

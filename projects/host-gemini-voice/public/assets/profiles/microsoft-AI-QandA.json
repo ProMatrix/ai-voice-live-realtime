@@ -1,0 +1,16 @@
+{
+    "profile_title": "Questions: Microsoft AI",
+    "profile_id": "microsoft-AI-QandA-session",    
+    "model_instructions": "microsoft-AI-QandA/instructions.txt",
+    "dialogue_file": "microsoft-AI-QandA/prompt.txt",
+    "voice_name": "Zephyr",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,      
+    "resource_files": ["/assets/profiles/ml-microsoft/compare-foundry-with-copilot.md"],
+    "pre_recorded": false,
+    "clear_session_on_startup": true,
+    "show_chatbots": true  
+}

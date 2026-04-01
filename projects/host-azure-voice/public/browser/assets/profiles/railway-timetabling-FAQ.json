@@ -1,0 +1,23 @@
+{
+    "profile_title": "Railway Timetabling",
+    "profile_id": "railway-timetabling-FAQ-session",
+    "model_name": "railway-timetabling-FAQ",
+    "voice_api_instructions": "railway-timetabling-FAQ/voiceInstructions.md",
+    "vision_api_instructions": "railway-timetabling-FAQ/visionInstructions.md",   
+    "voice_name": "en-US-PhoebeMultilingualNeural",
+    "pdf_file": "railway-timetabling-FAQ/railway-timetabling-and-capacity.pdf",
+    "pdf_flush": false,
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": [],
+    "pre_recorded": false,
+    "clear_session_on_startup": true,
+    "show_chatbots": true,
+    "default_text_message": "Hello! My name is Rachelle. Do you have questions about Railway Timetabling and Capacity?",
+    "start_button_mode": "record",
+    "discussion_mode": "single",
+    "conversation_starter": "assistant-agent"
+}

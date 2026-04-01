@@ -1,0 +1,19 @@
+{
+    "profile_title": "Realtime AI Demo",
+    "profile_id": "software-demo-session",    
+    "model_instructions": "software-demo/instructions.md",
+    "dialogue_file": "software-demo/dialogue-io.json",
+    "voice_name": "Zephyr",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.4,
+    "simFullVolume": 1.0,
+    "resource_files": ["software-demo/dialogue-io.json"],
+    "pre_recorded": true,
+    "turn_complete": false,
+    "inputs_opening_utterance": "Hello Rachelle!, I would like to ask you some questions about the e-book. How does that sound?",
+    "elevenLabsVoiceId": "F9Q7NaWYTVe9MfMzZLwq",
+    "clear_session_on_startup": true,
+    "show_chatbots": true
+}

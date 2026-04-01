@@ -1,0 +1,48 @@
+{
+    "profile_title": "Interactive AI Discussion",
+    "profile_id": "interactive-AI-discussion-session",
+    "model_name": "railway-timetabling-FAQ",
+    "voice_api_instructions": "interactive-AI-discussion/assistant-agentInstructions.md",
+    "voice_name": "en-US-DerekMultilingualNeural",
+    "topics_file": "interactive-AI-discussion/topics.json",
+    "pdf_file": "railway-timetabling-FAQ/railway-timetabling-and-capacity.pdf",
+    "pdf_flush": false,
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": ["interactive-AI-discussion/topics.json"],
+    "pre_recorded": false,
+    "clear_session_on_startup": true,
+    "show_chatbots": true,
+    "default_text_message": "Begin a short, lively coworker discussion on the selected software-design topic. Briefly announce the topic at the start, then work through tradeoffs together while using the Railway Timetabling and Capacity document when relevant.",
+    "start_button_mode": "playback",
+    "discussion_mode": "dual-live",
+    "conversation_starter": "assistant-agent",
+    "session_duration_minutes": 2.5,
+    "assistants": [
+        {
+            "id": "assistant-agent",
+            "display_name": "assistant-agent",
+            "voice_name": "en-US-DerekMultilingualNeural",
+            "voice_api_instructions": "interactive-AI-discussion/assistant-agentInstructions.md",
+            "persona_parameters": {
+                "attitude": "collaborative",
+                "persona": "application engineer",
+                "response_style": "brief, practical, and solution-oriented"
+            }
+        },
+        {
+            "id": "user-agent",
+            "display_name": "user-agent",
+            "voice_name": "en-US-AvaMultilingualNeural",
+            "voice_api_instructions": "interactive-AI-discussion/user-agentInstructions.md",
+            "persona_parameters": {
+                "attitude": "collaborative",
+                "persona": "platform and data engineer",
+                "response_style": "brief, thoughtful, and implementation-focused"
+            }
+        }
+    ]
+}

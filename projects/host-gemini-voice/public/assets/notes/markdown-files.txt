@@ -1,0 +1,15 @@
+https://gemini.google.com/app/1eb1b8f6692ef904
+
+Can I send a markdown file to the Google AI live API?
+
+
+The Gemini API supports various document types for multimodal input, including Markdown files, which are treated as document inputs.
+
+Supported Mechanism: You can use the Files API to upload your Markdown file. The Files API handles file storage and makes them available for use in your generateContent requests.
+
+
+File Size: Markdown files uploaded via the Files API are generally subject to size limits (e.g., up to 2 GB per file in some contexts, but smaller limits like 10 MB are also mentioned for RAG Engine documents, so it's best to check the latest specific documentation for the API you are using).
+
+Use in Prompts: Once uploaded, you'll reference the file's URI in your prompt to allow the Gemini model to process and analyze its content.
+
+This allows you to leverage the structure and content of your Markdown documents as context for generating responses or performing analysis with the AI model.

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Showcase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Neuropol&display=swap" rel="stylesheet" />
+  </head>
+
+  <style>
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 40px;
+      opacity: 0.5;
+    }
+    #version {
+      font-family: 'Neuropol', sans-serif;
+      opacity: 0.5;
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+    }
+
+    body {
+      font-family: 'Neuropol', sans-serif;
+      background-color: #333; /* Dark gray background */
+      color: #fff; /* White text for better readability */
+    }
+
+    button {
+      background-color: #555; /* Dark gray button background */
+      color: #fff; /* White text */
+      border: none; /* Remove default button border */
+      padding: 10px 15px; /* Add some padding for better appearance */
+      margin: 5px; /* Add margin to separate buttons */
+      cursor: pointer; /* Change cursor to pointer on hover */
+    }
+  </style>
+
+  <body>
+    <h1>Profile Showcase</h1>
+    <div id="buttonList">
+      <button style="width: 250px" onclick="startMeUp('railway-timetabling-agent')">railway-timetabling-agent</button>       
+      <button style="width: 250px" onclick="startMeUp('railway-timetabling-FAQ')">railway-timetabling-FAQ</button>      
+      <button style="width: 250px" onclick="startMeUp('microsoft-AI-discussion')">microsoft-AI-discussion</button>      
+      <button style="width: 250px" onclick="startMeUp('interactive-AI-discussion')">interactive-AI-discussion</button>
+      <button style="width: 250px" onclick="startMeUp('developer-assistant')">developer-assistant</button>
+      <button style="width: 250px" onclick="startMeUp('pdf-appraisal-extraction')">pdf-appraisal-extraction</button>                 
+      <button style="width: 250px" onclick="startMeUp('programming-essentials')">programming-essentials</button>      
+      <button style="width: 250px" onclick="startMeUp('software-demo-pre')">software-demo-preview</button>
+      <button style="width: 250px" onclick="startMeUp('software-demo')">software-demo</button>
+      <button style="width: 250px" onclick="startMeUp('ai-tutor-gmail')">ai-tutor-gmail</button>
+      <p></p>
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/programming-essentials/JavaScript_Programming_Essentials_for_AI-V1.pdf')">ai-programming-PDF</button>
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/railway-timetabling-FAQ/railway-timetabling-and-capacity.pdf')">railway-timetabling-PDF</button>        
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/goldenshield-insurance-agent/index.html')">goldenshield-insurance-HTML</button>        
+      <p></p>
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-appraisal-extraction/WV2026-018.pdf')">WV2026-018</button>
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-appraisal-extraction/WV2026-017.pdf')">WV2026-017</button>        
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-appraisal-extraction/WV2026-016.pdf')">WV2026-016</button>        
+    </div>
+
+    <div id="version"></div>
+  </body>
+
+  <script>
+    const version = '21.2.2';
+
+    function viewDocument(document) {
+      const url = `${location.origin}/${document}`;
+
+      window.open(url, '_blank');
+    }
+
+    function startMeUp(profile) {
+      const url = `${location.origin}/?profile=${profile}`;
+      location.href = url;
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+      document.getElementById('version').textContent = version;
+    });
+  </script>
+</html>

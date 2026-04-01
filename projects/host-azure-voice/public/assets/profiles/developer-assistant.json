@@ -1,0 +1,23 @@
+{
+    "profile_title": "AI Developer Assistant",
+    "profile_id": "developer-assistant-session",
+    "voice_api_instructions": "developer-assistant/voiceInstructions.md",
+    "vision_api_instructions": "developer-assistant/visionInstructions.md",
+    "dialogue_file": "",
+    "voice_name": "en-US-PhoebeMultilingualNeural",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": [],
+    "pre_recorded": false,
+    "go_bridge": "",
+    "clear_session_on_startup": false,
+    "show_side_panel": true,
+    "show_chatbots": true,
+    "default_text_message": "Are you good to go?",
+    "start_button_mode": "record",
+    "discussion_mode": "single",
+    "conversation_starter": "assistant-agent"
+}

@@ -1,0 +1,18 @@
+{
+    "profile_title": "Railway Timetabling",
+    "profile_id": "railway-timetabling-FAQ-session",
+    "model_name": "railway-timetabling-FAQ",
+    "model_instructions": "railway-timetabling-FAQ/instructions.md",
+    "voice_name": "Zephyr",
+    "pdf_file": "railway-timetabling-FAQ/railway-timetabling-and-capacity-v1.pdf",
+    "pdf_flush": false,
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,
+    "resource_files": [],
+    "pre_recorded": false,
+    "clear_session_on_startup": true,
+    "show_chatbots": true
+}

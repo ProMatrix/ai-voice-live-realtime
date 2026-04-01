@@ -1,0 +1,63 @@
+@font-face {
+  font-family: 'Neuropol';
+  src: url('/assets/fonts/neuropol.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'IBMPlexMono';
+  src: url('/assets/fonts/IBMPlexMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'DigitalNumbers';
+  src: url('/assets/fonts/DigitalNumbers-Regular.ttf') format('truetype');
+}
+
+.controls-info {
+  font-family: 'IBMPlexMono', monospace  !important;
+  font-size: 28px;
+  cursor: default;
+  color: black;
+  justify-content: flex-start;
+}
+
+.controls-label {
+  font-family: 'IBMPlexMono', monospace  !important;
+  font-size: 18px;
+  cursor: default;
+  color: #fff;
+  justify-content: flex-start;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+html {
+  width: 1075px;
+}
+
+body {
+  background-color:#1c1c1c;
+  width: 1060px;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.message-user {
+    align-self: flex-start;
+    background-color: rgb(50, 50, 50);
+    color: white;
+    border-bottom-left-radius: 2px;
+}
+
+.message-ai {
+    align-self: flex-end;
+    background-color: rgb(50, 50, 50);
+    color: white;
+    border-bottom-right-radius: 2px;
+}

@@ -1,0 +1,21 @@
+{
+    "profile_title": "Gmail Quick Test",
+    "profile_id": "ai-tutor-gmail-session",
+    "voice_api_instructions": "ai-tutor-gmail/voiceInstructions.md",
+    "vision_api_instructions": "ai-tutor-gmail/visionInstructions.md",
+    "dialogue_file": "",
+    "voice_name": "en-US-PhoebeMultilingualNeural",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,   
+    "resource_files": [],
+    "pre_recorded": false,
+    "clear_session_on_startup": true,
+    "show_chatbots": true,
+    "default_text_message": "Hello my name is Jasmine. Ready to test your gmail?",
+    "start_button_mode": "record",
+    "discussion_mode": "single",
+    "conversation_starter": "assistant-agent"  
+}

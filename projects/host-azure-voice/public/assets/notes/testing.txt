@@ -1,0 +1,27 @@
+developer-assistant : F
+
+software-demo : F
+
+railway-timetabling-FAQ : T
+
+goldenshield-insurance-agent : T
+
+ai-tutor-gmail : T
+
+microsoft-AI-quiz : T
+
+microsoft-AI-discussion: T
+
+microsoft-AI-QandA : T
+
+chat-web-app : T
+
+p1-sequential-workflow : T
+
+p2-workflow-agents : T
+
+p3-vscode-web : T
+
+p4-vscode-local : T
+
+p5-service-principal : T

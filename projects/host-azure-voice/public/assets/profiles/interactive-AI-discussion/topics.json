@@ -1,0 +1,29 @@
+{
+  "topics": [
+    {
+      "id": "database-choice",
+      "title": "Database Choice",
+      "summary": "Discuss which data store best fits a railway planning solution, including tradeoffs around structured schedules, search, analytics, and operational simplicity."
+    },
+    {
+      "id": "api-design",
+      "title": "API Design",
+      "summary": "Discuss how to design APIs for timetable, capacity, and simulation workflows so client apps and services can collaborate cleanly."
+    },
+    {
+      "id": "caching-strategy",
+      "title": "Caching Strategy",
+      "summary": "Discuss what should be cached in a railway analysis solution, how freshness should be managed, and where caching could reduce latency without hiding important changes."
+    },
+    {
+      "id": "deployment-strategy",
+      "title": "Deployment Strategy",
+      "summary": "Discuss how to deploy a railway planning application reliably, including environment separation, rollout safety, observability, and operational ownership."
+    },
+    {
+      "id": "event-driven-architecture",
+      "title": "Event-Driven Architecture",
+      "summary": "Discuss whether event-driven patterns would help coordinate timetable updates, analysis jobs, and downstream consumers in a railway solution."
+    }
+  ]
+}

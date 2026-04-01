@@ -1,0 +1,16 @@
+{
+    "profile_title": "Golden Shield Agent",
+    "profile_id": "goldenshield-insurance-agent-session",    
+    "model_instructions": "goldenshield-insurance-agent/instructions.md",
+    "dialogue_file": "",
+    "voice_name": "Puck",
+    "isSpeakerOn": true,
+    "aiVolume": 0.3,
+    "aiFullVolume": 1.0,
+    "simVolume": 0.3,
+    "simFullVolume": 1.0,      
+    "resource_files": ["goldenshield-insurance-agent/gs_kb_auto.html", "goldenshield-insurance-agent/gs_kb_business.html", "goldenshield-insurance-agent/gs_kb_dental.html", "goldenshield-insurance-agent/gs_kb_health.html", "goldenshield-insurance-agent/gs_kb_homeowners.html", "goldenshield-insurance-agent/gs_kb_life.html"],
+    "pre_recorded": false,
+    "clear_session_on_startup": true,
+    "show_chatbots": true
+}
