@@ -33,7 +33,7 @@ export class VisionApiService {
         apiKey: this.config.visionApiKey,
         // Fine for local experiments, but do not expose API keys in production.
         dangerouslyAllowBrowser: true,
-      });  
+      });
     } catch (error) {
       alert('Failed to initialize Vision API client. Please check the console for details.');
       console.error('Error initializing Vision API client:', error);
@@ -52,7 +52,7 @@ export class VisionApiService {
   public async askFirstQuestionAboutImage(
     imageUrl: string,
     question: string,
-    instructions = 'Answer in plain English.'
+    instructions = 'Answer in plain English.',
   ): Promise<string> {
     const client = this.getClient();
     const modelImageUrl = await this.toModelImageUrl(imageUrl);
@@ -94,7 +94,7 @@ export class VisionApiService {
   public async askQuestionAboutCurrentImage(
     question: string,
     imageUrl: string | null = this.currentImageDataUrl,
-    instructions = 'Answer in plain English.'
+    instructions = 'Answer in plain English.',
   ): Promise<string> {
     if (!imageUrl) {
       throw new Error('No image is available yet. Share a screen or capture an image first.');
@@ -114,13 +114,13 @@ export class VisionApiService {
    */
   public async askFollowUpQuestion(
     question: string,
-    instructions = 'Answer in plain English.'
+    instructions = 'Answer in plain English.',
   ): Promise<string> {
     const client = this.getClient();
 
     if (!this.previousResponseId) {
       throw new Error(
-        'No previous image conversation exists. Call askFirstQuestionAboutImage() first.'
+        'No previous image conversation exists. Call askFirstQuestionAboutImage() first.',
       );
     }
 
@@ -187,7 +187,7 @@ export class VisionApiService {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error.';
       throw new Error(
-        `The model endpoint could not access the remote image URL, and the browser fallback download also failed. ${message}`
+        `The model endpoint could not access the remote image URL, and the browser fallback download also failed. ${message}`,
       );
     }
   }

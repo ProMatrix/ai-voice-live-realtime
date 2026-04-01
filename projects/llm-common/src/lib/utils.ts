@@ -57,4 +57,3 @@ export async function dataURLtoFile(dataurl: string, filename: string): Promise<
   const blob = new Blob([u8arr], { type: mime });
   return new File([blob], filename, { type: mime });
 }
-

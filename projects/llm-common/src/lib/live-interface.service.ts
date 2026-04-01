@@ -38,12 +38,14 @@ import {
   IVisionAssistantConfig,
 } from './interfaces';
 
-
 @Injectable({ providedIn: 'root' })
 export class LiveInterfaceService {
   public showHostActive(): boolean {
     if (this.profile?.show_chatbots === false) return false;
-    return this.conversationAudioService.isUserSpeaking || this.preRecordedAudioService.isPlayingPreRecorded;
+    return (
+      this.conversationAudioService.isUserSpeaking ||
+      this.preRecordedAudioService.isPlayingPreRecorded
+    );
   }
   public showGuestActive(): boolean {
     if (this.profile?.show_chatbots === false) return false;
@@ -131,7 +133,9 @@ export class LiveInterfaceService {
     'assistant-agent': '',
     'user-agent': '',
   };
-  private pendingCompletedTurnTimeoutByAgent: Partial<Record<'assistant-agent' | 'user-agent', ReturnType<typeof setTimeout>>> = {};
+  private pendingCompletedTurnTimeoutByAgent: Partial<
+    Record<'assistant-agent' | 'user-agent', ReturnType<typeof setTimeout>>
+  > = {};
 
   private handleTranscription(text: string) {
     if (this.outputMessageDiv) {
@@ -302,18 +306,18 @@ export class LiveInterfaceService {
   }
 
   private isAssistantFlushOnPauseProfile(): boolean {
-    return [
-      'developer-assistant-session',
-      'appraisal-session',
-      'ai-tutor-gmail-session',
-    ].includes(this.profile.profile_id);
+    return ['developer-assistant-session', 'appraisal-session', 'ai-tutor-gmail-session'].includes(
+      this.profile.profile_id,
+    );
   }
 
   private getDiscussionAgents(): IDiscussionAgentProfile[] {
     return this.profile.assistants ?? [];
   }
 
-  private getDiscussionAgent(agentId: 'assistant-agent' | 'user-agent'): IDiscussionAgentProfile | undefined {
+  private getDiscussionAgent(
+    agentId: 'assistant-agent' | 'user-agent',
+  ): IDiscussionAgentProfile | undefined {
     return this.getDiscussionAgents().find((agent) => agent.id === agentId);
   }
 
@@ -322,9 +326,10 @@ export class LiveInterfaceService {
   // }
 
   private getDiscussionInstruction(agentId: 'assistant-agent' | 'user-agent'): string {
-    const baseInstructions = agentId === 'assistant-agent'
-      ? this.assistantAgentInstructions || this.voiceApiInstructions
-      : this.userAgentInstructions;
+    const baseInstructions =
+      agentId === 'assistant-agent'
+        ? this.assistantAgentInstructions || this.voiceApiInstructions
+        : this.userAgentInstructions;
 
     const topicContext = this.getSelectedDiscussionTopicContext();
     if (!topicContext) {
@@ -353,7 +358,7 @@ export class LiveInterfaceService {
       throw new Error(`Unable to load topics file "${topicsFile}".`);
     }
 
-    const data = await response.json() as { topics?: IDiscussionTopic[] };
+    const data = (await response.json()) as { topics?: IDiscussionTopic[] };
     if (!Array.isArray(data.topics) || data.topics.length === 0) {
       throw new Error(`Topics file "${topicsFile}" must contain a non-empty topics array.`);
     }
@@ -434,9 +439,10 @@ export class LiveInterfaceService {
   private startDiscussionTimer(): void {
     this.clearDiscussionTimer();
 
-    const durationMinutes = this.profile.session_duration_minutes && this.profile.session_duration_minutes > 0
-      ? this.profile.session_duration_minutes
-      : 5;
+    const durationMinutes =
+      this.profile.session_duration_minutes && this.profile.session_duration_minutes > 0
+        ? this.profile.session_duration_minutes
+        : 5;
     const durationMs = durationMinutes * 60 * 1000;
 
     this.discussionTimerId = setTimeout(() => {
@@ -512,18 +518,21 @@ export class LiveInterfaceService {
   }
 
   private async waitForDualDiscussionPlaybackFlush(): Promise<void> {
-    while (/* this.voiceAssistant.isPlayingOutputAudio || this.userAssistant.isPlayingOutputAudio */ false) {
+    while (
+      /* this.voiceAssistant.isPlayingOutputAudio || this.userAssistant.isPlayingOutputAudio */ false
+    ) {
       await sleep(25);
     }
   }
 
   private async pauseDualDiscussionPlayback(): Promise<void> {
     const interruptedSpeaker = this.lastDiscussionSpeaker;
-    const interruptedText = interruptedSpeaker === 'user-agent'
-      ? this.inputTranscription.trim()
-      : interruptedSpeaker === 'assistant-agent'
-        ? this.outputTranscription.trim()
-        : '';
+    const interruptedText =
+      interruptedSpeaker === 'user-agent'
+        ? this.inputTranscription.trim()
+        : interruptedSpeaker === 'assistant-agent'
+          ? this.outputTranscription.trim()
+          : '';
 
     this.isDualDiscussionPaused = true;
     this.audioLevel = 0;
@@ -566,7 +575,10 @@ export class LiveInterfaceService {
   }
 
   private async waitForPreRecordedPlaybackFlush(): Promise<void> {
-    while (/* this.voiceAssistant.isPlayingOutputAudio || */ this.preRecordedAudioService.isPlayingPreRecorded) {
+    while (
+      /* this.voiceAssistant.isPlayingOutputAudio || */ this.preRecordedAudioService
+        .isPlayingPreRecorded
+    ) {
       await sleep(25);
     }
   }
@@ -649,7 +661,7 @@ export class LiveInterfaceService {
     let question = '';
 
     try {
-      const parsed = rawArguments ? JSON.parse(rawArguments) as { question?: string } : {};
+      const parsed = rawArguments ? (JSON.parse(rawArguments) as { question?: string }) : {};
       question = parsed.question?.trim() ?? '';
     } catch {
       question = '';
@@ -698,7 +710,8 @@ export class LiveInterfaceService {
 
     if (!imageDataUrl) {
       return JSON.stringify({
-        error: 'I could not capture a frame from the shared screen yet. Please try again in a moment.',
+        error:
+          'I could not capture a frame from the shared screen yet. Please try again in a moment.',
       });
     }
 
@@ -774,7 +787,9 @@ export class LiveInterfaceService {
       }
       this.pendingCompletedTurnTimeoutByAgent[agentId] = setTimeout(() => {
         if (this.pendingCompletedTurnByAgent[agentId]) {
-          console.warn(`[LiveInterfaceService] ${agentId} did not report listening after completion. Forcing handoff.`);
+          console.warn(
+            `[LiveInterfaceService] ${agentId} did not report listening after completion. Forcing handoff.`,
+          );
           const pendingText = this.pendingCompletedTurnByAgent[agentId];
           this.pendingCompletedTurnByAgent[agentId] = '';
           void this.completeDiscussionTurn(agentId, pendingText);
@@ -797,7 +812,9 @@ export class LiveInterfaceService {
     }
     this.pendingCompletedTurnTimeoutByAgent[agentId] = setTimeout(() => {
       if (this.pendingCompletedTurnByAgent[agentId]) {
-        console.warn(`[LiveInterfaceService] ${agentId} did not report listening after completion. Forcing handoff.`);
+        console.warn(
+          `[LiveInterfaceService] ${agentId} did not report listening after completion. Forcing handoff.`,
+        );
         const pendingText = this.pendingCompletedTurnByAgent[agentId];
         this.pendingCompletedTurnByAgent[agentId] = '';
         void this.completeDiscussionTurn(agentId, pendingText);
@@ -843,7 +860,9 @@ export class LiveInterfaceService {
   ): string {
     const counterpart = speaker === 'assistant-agent' ? 'user-agent' : 'assistant-agent';
     const topicTitle = this.currentDiscussionTopic?.title ?? 'Selected Topic';
-    const topicSummary = this.currentDiscussionTopic?.summary ?? 'Focus on the chosen topic from the railway document.';
+    const topicSummary =
+      this.currentDiscussionTopic?.summary ??
+      'Focus on the chosen topic from the railway document.';
 
     if (previousSpeaker === 'system') {
       return [
@@ -952,7 +971,7 @@ export class LiveInterfaceService {
     if (forwardToAssistant) {
       // Forward UI text input into the active VoiceAssistant session so the
       // same assistant that handles audio also handles text-only messages.
-// void this.voiceAssistant.sendMessage(text);
+      // void this.voiceAssistant.sendMessage(text);
     }
   }
 
@@ -1021,29 +1040,29 @@ export class LiveInterfaceService {
     this.preRecordedAssistantTurnCompleting = true;
 
     try {
-    while (false /*  */) {
-      await sleep(ONE_SECOND);
-    }
-
-    await sleep(ONE_SECOND);
-
-    if (this.aiSpokenMessageDiv && this.profile.show_chatbots) {
-      this.fadeOutSpokenMessage(this.aiSpokenMessageDiv, 'ai');
-    }
-
-    this.greetingsFromAiSpoken = true;
-
-    if (this.profile.pre_recorded && this.isRecording) {
-      while (this.serviceMode === 'pauseRecording') {
+      while (false /*  */) {
         await sleep(ONE_SECOND);
       }
 
-      if (this.serviceMode !== 'stopRecording') {
-        await this.preRecordedDialogue();
-      }
-    }
+      await sleep(ONE_SECOND);
 
-    this.outputTranscription = '';
+      if (this.aiSpokenMessageDiv && this.profile.show_chatbots) {
+        this.fadeOutSpokenMessage(this.aiSpokenMessageDiv, 'ai');
+      }
+
+      this.greetingsFromAiSpoken = true;
+
+      if (this.profile.pre_recorded && this.isRecording) {
+        while (this.serviceMode === 'pauseRecording') {
+          await sleep(ONE_SECOND);
+        }
+
+        if (this.serviceMode !== 'stopRecording') {
+          await this.preRecordedDialogue();
+        }
+      }
+
+      this.outputTranscription = '';
     } finally {
       this.preRecordedAssistantTurnCompleting = false;
     }
@@ -1175,7 +1194,9 @@ export class LiveInterfaceService {
     }
   }
 
-  public renderAppraisalSummaryHtmls(propertyAppraisalHtmls: IHtmlPage[] = this.appraisalSummaryHtmls) {
+  public renderAppraisalSummaryHtmls(
+    propertyAppraisalHtmls: IHtmlPage[] = this.appraisalSummaryHtmls,
+  ) {
     this.generateAppraisalSummaryHtml(propertyAppraisalHtmls);
   }
 
@@ -1275,11 +1296,11 @@ export class LiveInterfaceService {
         this.audioLevel = level;
       }
     };
-    // this.liveAssistantService.onAudioLevelChange(  (audio: ArrayBuffer) => { 
+    // this.liveAssistantService.onAudioLevelChange(  (audio: ArrayBuffer) => {
     //   this.conversationAudioService.playAudio(audio);
     // };
- 
-    // this.liveAssistantService.onMessageReceived(  (text: string) => { 
+
+    // this.liveAssistantService.onMessageReceived(  (text: string) => {
     //   void this.onOutputTranscription(text);
     // };
     // };
@@ -1400,7 +1421,8 @@ export class LiveInterfaceService {
         this.preRecordedAudioService.isPlayingPreRecorded ||
         this.inputTranscription.trim().length > 0;
 
-    const isAssistantSideActive = false /* this.voiceAssistant.isPlayingOutputAudio */ ||
+    const isAssistantSideActive =
+      false /* this.voiceAssistant.isPlayingOutputAudio */ ||
       this.outputTranscription.trim().length > 0;
 
     if (isUserSideActive || isAssistantSideActive) {
@@ -1471,12 +1493,12 @@ export class LiveInterfaceService {
           'user',
         );
         this.inputMessageDiv = null; // Clear the reference
-          this.inputTranscription = '';
+        this.inputTranscription = '';
 
-          // User has stopped speaking for FIFTEEN_HUNDRED_MS: fade out and hide the bubble
-          if (this.userSpokenMessageDiv && this.profile.show_chatbots) {
-            this.fadeOutSpokenMessage(this.userSpokenMessageDiv, 'user');
-          }
+        // User has stopped speaking for FIFTEEN_HUNDRED_MS: fade out and hide the bubble
+        if (this.userSpokenMessageDiv && this.profile.show_chatbots) {
+          this.fadeOutSpokenMessage(this.userSpokenMessageDiv, 'user');
+        }
       }
     }, FIFTEEN_HUNDRED_MS);
   }
@@ -1724,16 +1746,14 @@ export class LiveInterfaceService {
     }
 
     // this is for the pre-recorded input to AI
-// void this.voiceAssistant.sendMessage(clientContent);
+    // void this.voiceAssistant.sendMessage(clientContent);
 
     this.inputFirstTimerId = setTimeout(async () => {
       // This timeout triggers if no output is received after input
       // within a reasonable time, to keep the dialogue flowing.
       // This seems only needed for the very first input in some cases.
       // And only necessary the first time, as subsequent inputs work fine.
-
-// await this.voiceAssistant.sendMessage(clientContent);
-
+      // await this.voiceAssistant.sendMessage(clientContent);
     }, FIVE_SECONDS);
   }
   /**
@@ -1760,7 +1780,7 @@ export class LiveInterfaceService {
     this.displaySplash();
     this.restartSession(this.resetSession);
 
-    this.setupVoiceAssistantCallbacks();    
+    this.setupVoiceAssistantCallbacks();
   }
 
   public async startupPreRecorded() {
@@ -1784,8 +1804,6 @@ export class LiveInterfaceService {
     this.foundryAgentService.resetConversation();
   }
 
-
-
   public initializeHistory(chatHistoryMessagesDiv: HTMLDivElement) {
     this.chatHistoryService.initialize(this.profile, chatHistoryMessagesDiv);
   }
@@ -1793,7 +1811,11 @@ export class LiveInterfaceService {
   public async continuePlayback() {
     this.serviceMode = 'startPlayback';
 
-    if (this.isDualLiveDiscussionProfile() && this.pendingDiscussionSpeaker && !this.isDualDiscussionPaused) {
+    if (
+      this.isDualLiveDiscussionProfile() &&
+      this.pendingDiscussionSpeaker &&
+      !this.isDualDiscussionPaused
+    ) {
       const speaker = this.pendingDiscussionSpeaker;
       const prompt = this.pendingDiscussionPrompt;
       this.pendingDiscussionSpeaker = null;
@@ -1811,17 +1833,16 @@ export class LiveInterfaceService {
   public async continueRecording() {
     // this.setupEventHandlers();
 
-      this.serviceMode = 'startRecording';
-      this.isMuted = false;
+    this.serviceMode = 'startRecording';
+    this.isMuted = false;
 
-      // move this to initialize or systemStartup so it's only set once, not on every continueRecording which can cause multiple callbacks to be registered
-      // this.setupVoiceAssistantCallbacks();
-      
-      
-      this.setupServiceCallbacks();    
-      if (false /*  */) {
-        await this.handleConnect();
-      }
+    // move this to initialize or systemStartup so it's only set once, not on every continueRecording which can cause multiple callbacks to be registered
+    // this.setupVoiceAssistantCallbacks();
+
+    this.setupServiceCallbacks();
+    if (false /*  */) {
+      await this.handleConnect();
+    }
   }
 
   private setupDualDiscussionCallbacks(): void {
@@ -1844,12 +1865,16 @@ export class LiveInterfaceService {
 
         const pendingText = this.pendingCompletedTurnByAgent[agentId];
         if (!pendingText) {
-          console.log(`[LiveInterfaceService] ${agentId} listening with no pending completed turn.`);
+          console.log(
+            `[LiveInterfaceService] ${agentId} listening with no pending completed turn.`,
+          );
           return;
         }
 
         this.pendingCompletedTurnByAgent[agentId] = '';
-        console.log(`[LiveInterfaceService] ${agentId} listening with pending turn. advancing handoff.`);
+        console.log(
+          `[LiveInterfaceService] ${agentId} listening with pending turn. advancing handoff.`,
+        );
         void this.completeDiscussionTurn(agentId, pendingText);
       },
       onConversationMessage: () => {},
@@ -1883,9 +1908,8 @@ export class LiveInterfaceService {
         if (agentId === 'user-agent') {
           this.audioLevel = level;
           if (this.userSpokenMessageDiv && this.profile.show_chatbots && level > 5) {
-            const placeholderOrText = this.inputTranscription.trim().length > 0
-              ? this.inputTranscription
-              : '...';
+            const placeholderOrText =
+              this.inputTranscription.trim().length > 0 ? this.inputTranscription : '...';
             void this.updateSpokenMessage(placeholderOrText, this.userSpokenMessageDiv);
           }
           return;
@@ -1893,9 +1917,8 @@ export class LiveInterfaceService {
 
         this.outputAudioLevel = level;
         if (this.aiSpokenMessageDiv && this.profile.show_chatbots && level > 5) {
-          const placeholderOrText = this.outputTranscription.trim().length > 0
-            ? this.outputTranscription
-            : '...';
+          const placeholderOrText =
+            this.outputTranscription.trim().length > 0 ? this.outputTranscription : '...';
           void this.updateSpokenMessage(placeholderOrText, this.aiSpokenMessageDiv);
         }
       },
@@ -1967,17 +1990,13 @@ export class LiveInterfaceService {
 
           // When streaming is marked complete, finalize the assistant
           // message in chat history and reset the transcription buffer.
-            if (message.isStreaming === false) {
-              if (this.outputMessageDiv) {
-                this.chatHistoryService.finalizeMessage(
-                  this.outputMessageDiv,
-                  fullText,
-                  'assistant',
-                );
-                this.outputMessageDiv = null;
-                this.outputTranscription = '';
-              }
-              void this.completeAssistantTurn();
+          if (message.isStreaming === false) {
+            if (this.outputMessageDiv) {
+              this.chatHistoryService.finalizeMessage(this.outputMessageDiv, fullText, 'assistant');
+              this.outputMessageDiv = null;
+              this.outputTranscription = '';
+            }
+            void this.completeAssistantTurn();
           }
         }
       },
@@ -2036,7 +2055,7 @@ export class LiveInterfaceService {
       },
       onOutputAudioLevel: (level) => {
         this.outputAudioLevel = level;
-      }
+      },
     };
 
     // this.voiceAssistant.setCallbacks(callbacks);
@@ -2045,24 +2064,21 @@ export class LiveInterfaceService {
   private async handleConnect() {
     try {
       const config = this.getVoiceConfiguration();
-// await this.voiceAssistant.connect(config);
-// await this.voiceAssistant.startConversation();
+      // await this.voiceAssistant.connect(config);
+      // await this.voiceAssistant.startConversation();
       // this.voiceAssistant.setOutputVolume(this.aiVolume);
       // this.voiceAssistant.setOutputMuted(!this.isSpeakerOutputEnabled);
-      
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
 
   private async handleDualConnect(): Promise<void> {
     const assistantConfig = this.getVoiceConfigurationForDiscussionAgent('assistant-agent');
     const userConfig = this.getVoiceConfigurationForDiscussionAgent('user-agent');
 
-// await this.voiceAssistant.connect(assistantConfig);
-// await this.userAssistant.connect(userConfig);
-// await this.voiceAssistant.startConversation();
-// await this.userAssistant.startConversation();
+    // await this.voiceAssistant.connect(assistantConfig);
+    // await this.userAssistant.connect(userConfig);
+    // await this.voiceAssistant.startConversation();
+    // await this.userAssistant.startConversation();
 
     // this.voiceAssistant.setOutputVolume(this.aiVolume);
     // this.userAssistant.setOutputVolume(this.simVolume);
@@ -2073,11 +2089,9 @@ export class LiveInterfaceService {
   private async handleDisconnect(): Promise<void> {
     // Maybe not needed with Azure Voice Live.
     try {
-// await this.voiceAssistant.disconnect();
-// await this.userAssistant.disconnect();
-    } catch (error) {
-
-    }
+      // await this.voiceAssistant.disconnect();
+      // await this.userAssistant.disconnect();
+    } catch (error) {}
   }
 
   private createAssistantToolDefinitions(): Array<Record<string, unknown>> {
@@ -2087,13 +2101,15 @@ export class LiveInterfaceService {
       tools.push({
         type: 'function',
         name: 'analyze_current_image',
-        description: 'Analyze the currently shared image or screen and answer the user\'s question using the latest captured frame.',
+        description:
+          "Analyze the currently shared image or screen and answer the user's question using the latest captured frame.",
         parameters: {
           type: 'object',
           properties: {
             question: {
               type: 'string',
-              description: 'The exact question the user is asking about the current image or shared screen.',
+              description:
+                'The exact question the user is asking about the current image or shared screen.',
             },
           },
           required: ['question'],
@@ -2106,8 +2122,8 @@ export class LiveInterfaceService {
         type: 'function',
         name: 'analyze_uploaded_pdf',
         description: this.hasFoundryAgentProfile()
-          ? 'Answer the user\'s question using the grounded Azure AI Foundry agent configured for this profile.'
-          : 'Answer the user\'s question using the active uploaded PDF document or documents for this session.',
+          ? "Answer the user's question using the grounded Azure AI Foundry agent configured for this profile."
+          : "Answer the user's question using the active uploaded PDF document or documents for this session.",
         parameters: {
           type: 'object',
           properties: {
@@ -2166,8 +2182,7 @@ export class LiveInterfaceService {
     const defaultVoiceApiKey = '';
     const defaultVoiceApiEndpoint = '';
     const voiceApiKey = localStorage.getItem('voiceApiKey') ?? defaultVoiceApiKey;
-    const voiceApiEndpoint =
-      localStorage.getItem('voiceApiEndpoint') ?? defaultVoiceApiEndpoint;
+    const voiceApiEndpoint = localStorage.getItem('voiceApiEndpoint') ?? defaultVoiceApiEndpoint;
     const voiceApiVoice = this.profile.voice_name;
     let voiceApiInstructions = this.getComposedVoiceInstructions();
     const tools = this.createAssistantToolDefinitions();
@@ -2185,7 +2200,16 @@ export class LiveInterfaceService {
       alert(`Error: Voice API Key is required!`);
       throw new Error('Voice API Key is required!');
     }
-    return { voiceApiEndpoint, voiceApiKey, voiceApiVoice, voiceApiInstructions, tools, toolChoice, debugMode, useTokenCredential };
+    return {
+      voiceApiEndpoint,
+      voiceApiKey,
+      voiceApiVoice,
+      voiceApiInstructions,
+      tools,
+      toolChoice,
+      debugMode,
+      useTokenCredential,
+    };
   }
 
   private getPdfConfiguration(): IPdfAssistantConfig {
@@ -2258,8 +2282,7 @@ export class LiveInterfaceService {
     const defaultVisionApiEndpoint = '';
     const defaultVisionApiDeployment = '';
     const visionApiKey = localStorage.getItem('visionApiKey') ?? defaultVisionApiKey;
-    const visionApiEndpoint =
-      localStorage.getItem('visionApiEndpoint') ?? defaultVisionApiEndpoint;
+    const visionApiEndpoint = localStorage.getItem('visionApiEndpoint') ?? defaultVisionApiEndpoint;
     const visionApiDeployment =
       localStorage.getItem('visionApiDeployment') ?? defaultVisionApiDeployment;
     const visionApiInstructions = this.visionApiInstructions;
@@ -2278,8 +2301,14 @@ export class LiveInterfaceService {
     if (!visionApiDeployment) {
       alert(`Error: Vision API Deployment is required!`);
       throw new Error('Vision API Deployment is required!');
-    }    
-    return { visionApiEndpoint, visionApiKey, visionApiDeployment, visionApiInstructions, debugMode };
+    }
+    return {
+      visionApiEndpoint,
+      visionApiKey,
+      visionApiDeployment,
+      visionApiInstructions,
+      debugMode,
+    };
   }
 
   /**
@@ -2578,9 +2607,9 @@ export class LiveInterfaceService {
       this.startDiscussionTimer();
       this.discussionStarted = true;
 
-      const starter = (this.profile.conversation_starter === 'user-agent'
-        ? 'user-agent'
-        : 'assistant-agent') as 'assistant-agent' | 'user-agent';
+      const starter = (
+        this.profile.conversation_starter === 'user-agent' ? 'user-agent' : 'assistant-agent'
+      ) as 'assistant-agent' | 'user-agent';
       const starterPrompt = this.buildDiscussionTurnPrompt(
         starter,
         'system',
@@ -2600,18 +2629,14 @@ export class LiveInterfaceService {
 
     // this.voiceAssistant.setInputMuted(this.profile.pre_recorded);
 
-    if (
-      !this.profile.pre_recorded &&
-      this.profile.conversation_starter === 'assistant-agent'
-    ) {
+    if (!this.profile.pre_recorded && this.profile.conversation_starter === 'assistant-agent') {
       const openingPrompt = this.profile.default_text_message?.trim() || 'Are you ready?';
-// await this.voiceAssistant.sendMessage(openingPrompt);
+      // await this.voiceAssistant.sendMessage(openingPrompt);
     }
 
     if (this.profile.pre_recorded) {
       this.startPreRecordedConversation();
     }
-
 
     // Ensure the audio system and microphone are active before streaming to Azure Voice Live.
     // await this.conversationAudioService.initializeAudioSystem();
@@ -2658,7 +2683,7 @@ export class LiveInterfaceService {
     this.dialogueIndex = 0;
     this.dialogueInput = '';
     this.outputTranscription = '';
-// await this.voiceAssistant.disconnect();
+    // await this.voiceAssistant.disconnect();
   }
 
   /**
@@ -2708,7 +2733,7 @@ export class LiveInterfaceService {
       // this.userAssistant.setOutputVolume(this.aiVolume);
     }
   }
-  
+
   public updateSpeakerState(isSpeakerOn: boolean) {
     this.isSpeakerOutputEnabled = isSpeakerOn;
     // this.voiceAssistant.setOutputMuted(!isSpeakerOn);
@@ -2734,6 +2759,4 @@ export class LiveInterfaceService {
   public getIsSpeechDetected(): boolean {
     return this.conversationAudioService.isAIspeechDetected;
   }
-
 }
-

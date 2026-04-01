@@ -58,7 +58,7 @@ export interface IProfile {
   simVolume: number;
   simFullVolume: number;
   model_name: string;
-  
+
   // Specific to Google
   model_instructions?: string;
 
@@ -154,6 +154,15 @@ export interface IVoiceAssistantConfig {
   voiceApiVoice: string;
   voiceApiInstructions: string;
   enableInputAudio?: boolean;
+}
+
+export interface IVoiceAssistantConfig {
+  voiceApiEndpoint: string;
+  voiceApiKey?: string;
+  useTokenCredential?: boolean;
+  voiceApiVoice: string;
+  voiceApiInstructions: string;
+  enableInputAudio?: boolean;
   tools?: Array<Record<string, unknown>>;
   toolChoice?: 'auto' | 'none' | Record<string, unknown>;
   debugMode?: boolean;
@@ -183,9 +192,19 @@ export interface IVoiceAssistantCallbacks {
   onConnectionStatusChange: (status: string) => void;
   onAssistantStatusChange: (status: string) => void;
   onConversationMessage: (message: { role: string; content: string; timestamp: Date }) => void;
-  onConversationMessageUpdate: (message: { role: string; content: string; timestamp: Date; messageId?: string; isStreaming?: boolean }) => void;
+  onConversationMessageUpdate: (message: {
+    role: string;
+    content: string;
+    timestamp: Date;
+    messageId?: string;
+    isStreaming?: boolean;
+  }) => void;
   onEventReceived: (event: { type: string; data: any; timestamp: Date }) => void;
-  onFunctionCall?: (request: { name: string; arguments: string; callId: string }) => Promise<string | Record<string, unknown>>;
+  onFunctionCall?: (request: {
+    name: string;
+    arguments: string;
+    callId: string;
+  }) => Promise<string | Record<string, unknown>>;
   onError: (error: string) => void;
   onAudioLevel: (level: number) => void;
   onOutputAudioLevel?: (level: number) => void;

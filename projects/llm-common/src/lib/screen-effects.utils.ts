@@ -15,10 +15,7 @@ async function fadeElement(
   const direction = startOpacity < endOpacity ? 1 : -1;
   let opacity = startOpacity;
 
-  while (
-    (direction > 0 && opacity < endOpacity) ||
-    (direction < 0 && opacity > endOpacity)
-  ) {
+  while ((direction > 0 && opacity < endOpacity) || (direction < 0 && opacity > endOpacity)) {
     htmlElement.style.opacity = opacity.toString();
     opacity += step * direction;
     await sleep(delayMs);
@@ -35,7 +32,10 @@ export function fadeInOverlay(htmlElement: HTMLDivElement) {
   return fadeElement(htmlElement, 0, 1);
 }
 
-export function toggleFadeClasses(elements: Array<Element | null | undefined>, shouldHide: boolean) {
+export function toggleFadeClasses(
+  elements: Array<Element | null | undefined>,
+  shouldHide: boolean,
+) {
   const addClass = shouldHide ? 'fade-out' : 'fade-in';
   const removeClass = shouldHide ? 'fade-in' : 'fade-out';
 

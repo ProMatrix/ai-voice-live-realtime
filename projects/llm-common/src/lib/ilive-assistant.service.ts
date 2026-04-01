@@ -8,12 +8,12 @@ export enum ConnectionState {
   DISCONNECTED = 'disconnected',
   CONNECTING = 'connecting',
   CONNECTED = 'connected',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 /**
- * ILiveAssistantService defines the strict contract that any LLM provider 
- * (Azure, Google) must implement. The Shared UX library will inject this 
+ * ILiveAssistantService defines the strict contract that any LLM provider
+ * (Azure, Google) must implement. The Shared UX library will inject this
  * token to interact with the chosen provider without knowing which SDK is in use.
  */
 export interface ILiveAssistantService {
@@ -56,7 +56,7 @@ export interface ILiveAssistantService {
    * Subscribes to completed or streaming text messages.
    */
   onMessageReceived(callback: (msg: IChatMessage, isStreaming?: boolean) => void): void;
-  
+
   /**
    * Handle errors globally.
    */
@@ -66,4 +66,6 @@ export interface ILiveAssistantService {
 /**
  * The InjectionToken used by Angular DI to provide the implementation.
  */
-export const LIVE_ASSISTANT_SERVICE_TOKEN = new InjectionToken<ILiveAssistantService>('LIVE_ASSISTANT_SERVICE_TOKEN');
+export const LIVE_ASSISTANT_SERVICE_TOKEN = new InjectionToken<ILiveAssistantService>(
+  'LIVE_ASSISTANT_SERVICE_TOKEN',
+);

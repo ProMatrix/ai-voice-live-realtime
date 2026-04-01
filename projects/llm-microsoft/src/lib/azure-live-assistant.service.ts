@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { IProfile, ConnectionState, ILiveAssistantService, IChatMessage } from 'llm-common';
+import {
+  IProfile,
+  ConnectionState,
+  ILiveAssistantService,
+  IChatMessage,
+  IVoiceAssistantConfig,
+  ConversationAudioService,
+} from 'llm-common';
 import {
   VoiceLiveClient,
   VoiceLiveSession,
@@ -28,13 +35,11 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
 
   // Callbacks used by LiveInterfaceService
   public onAudioReceived: ((audio: ArrayBuffer) => void) | null = null;
-  public onTranscriptionReceived: ((text: string) => void) | null = null;       
+  public onTranscriptionReceived: ((text: string) => void) | null = null;
 
-  constructor() {}
+  constructor(private conversationAudioService: ConversationAudioService) {}
 
-  public async initializeSession(
-    profile: IProfile,
-  ): Promise<void> {
+  public async initializeSession(profile: IProfile): Promise<void> {
     this.profile = profile;
     this.config = {}; // Can pull from environment / storage as needed
     // Configure and connect the Voice Live client/session.

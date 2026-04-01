@@ -1,13 +1,21 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ChatWindowComponent } from 'shared-ux';
 import { CommonModule } from '@angular/common';
-import { LiveInterfaceService, SnapshotIndicatorService, SessionTimer, formatElapsedTime, fadeInOverlay, fadeOutOverlay, toggleFadeClasses, sleep, defaultProfile, IProfile, FIFTEEN_HUNDRED_MS, ONE_SECOND, PROFILES_URL } from 'llm-common';
-
-
-
-
-
-
+import {
+  LiveInterfaceService,
+  SnapshotIndicatorService,
+  SessionTimer,
+  formatElapsedTime,
+  fadeInOverlay,
+  fadeOutOverlay,
+  toggleFadeClasses,
+  sleep,
+  defaultProfile,
+  IProfile,
+  FIFTEEN_HUNDRED_MS,
+  ONE_SECOND,
+  PROFILES_URL,
+} from 'llm-common';
 
 import { version } from '../../../../package.json';
 
@@ -104,16 +112,16 @@ export class App implements OnInit, OnDestroy {
   constructor(
     public liveInterface: LiveInterfaceService,
     public snapshotIndicatorService: SnapshotIndicatorService,
-  ) {
-  
-  }
+  ) {}
 
   showPanel(panel: 'page-links' | 'voice-text-input' | 'settings') {
     this.visiblePanel = panel;
   }
 
   canOpenOutputLinksPanel(): boolean {
-    return this.profile.pdf_summary && this.pdf_documents_ready && !this.summaryGenerationInProgress;
+    return (
+      this.profile.pdf_summary && this.pdf_documents_ready && !this.summaryGenerationInProgress
+    );
   }
 
   isPanelVisible(panel: 'page-links' | 'voice-text-input' | 'settings'): boolean {
@@ -355,8 +363,6 @@ export class App implements OnInit, OnDestroy {
     this.persistSetting('visionApiDeployment', value);
   }
 
-
-
   onSaveSettings() {
     this.persistSetting('voiceApiKey', this.voiceApiKey);
     this.persistSetting('voiceApiEndpoint', this.voiceApiEndpoint);
@@ -438,7 +444,9 @@ export class App implements OnInit, OnDestroy {
     try {
       parsed = JSON.parse(dialogueText);
     } catch (error) {
-      throw new Error(`The dialogue file for profile "${this.profile.profile_file}" is not valid JSON.`);
+      throw new Error(
+        `The dialogue file for profile "${this.profile.profile_file}" is not valid JSON.`,
+      );
     }
 
     if (!Array.isArray(parsed) || parsed.length === 0) {
@@ -581,7 +589,7 @@ export class App implements OnInit, OnDestroy {
     } else {
       this.visionApiInstructions = '';
     }
-    
+
     if (this.profile.data_instructions?.length > 0) {
       const dataInstructionsResponse = await fetch(
         `${PROFILES_URL}/${this.profile.data_instructions}`,
@@ -851,9 +859,10 @@ export class App implements OnInit, OnDestroy {
     const userbotVumeter = document.getElementById('userbot-audio-level');
     const assistantbotVumeter = document.getElementById('assistantbot-audio-level');
 
-
-
-    toggleFadeClasses([userbotVumeter, assistantbotVumeter, userbotImage, assistantbotImage, sideImage], this.isChatbotHidden);
+    toggleFadeClasses(
+      [userbotVumeter, assistantbotVumeter, userbotImage, assistantbotImage, sideImage],
+      this.isChatbotHidden,
+    );
   }
 
   toggleTranscriptions() {
@@ -867,7 +876,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   /**
-    * Gradually fades out the chat history container to reveal the screen-share vision panel.
+   * Gradually fades out the chat history container to reveal the screen-share vision panel.
    * Uses small async sleeps to animate opacity.
    * @returns A Promise that resolves when the fade-in sequence completes.
    */
@@ -885,7 +894,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   /**
-    * Gradually fades in the chat history container to hide the screen-share vision panel.
+   * Gradually fades in the chat history container to hide the screen-share vision panel.
    * Uses small async sleeps to animate opacity.
    * @returns A Promise that resolves when the fade-out sequence completes.
    */
@@ -1085,6 +1094,3 @@ export class App implements OnInit, OnDestroy {
     this.sessionTimer.resetAndStart();
   }
 }
-
-
-

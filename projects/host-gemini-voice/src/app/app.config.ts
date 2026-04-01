@@ -14,6 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    { provide: LIVE_ASSISTANT_SERVICE_TOKEN, useClass: GoogleLiveAssistantService }
+    { provide: LIVE_ASSISTANT_SERVICE_TOKEN, useClass: GoogleLiveAssistantService },
   ],
 };

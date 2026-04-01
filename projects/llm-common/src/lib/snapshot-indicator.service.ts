@@ -53,15 +53,24 @@ export class SnapshotIndicatorService {
     );
 
     this.timeoutIds.push(
-      window.setTimeout(() => {
-        this.phase.set('fading');
-      }, CAMERA_PREVIEW_BEAT_MS + CAMERA_FLASH_BEAT_MS + CAMERA_COOLDOWN_BEAT_MS),
+      window.setTimeout(
+        () => {
+          this.phase.set('fading');
+        },
+        CAMERA_PREVIEW_BEAT_MS + CAMERA_FLASH_BEAT_MS + CAMERA_COOLDOWN_BEAT_MS,
+      ),
     );
 
     this.timeoutIds.push(
-      window.setTimeout(() => {
-        this.phase.set('hidden');
-      }, CAMERA_PREVIEW_BEAT_MS + CAMERA_FLASH_BEAT_MS + CAMERA_COOLDOWN_BEAT_MS + CAMERA_FADE_OUT_MS),
+      window.setTimeout(
+        () => {
+          this.phase.set('hidden');
+        },
+        CAMERA_PREVIEW_BEAT_MS +
+          CAMERA_FLASH_BEAT_MS +
+          CAMERA_COOLDOWN_BEAT_MS +
+          CAMERA_FADE_OUT_MS,
+      ),
     );
   }
 

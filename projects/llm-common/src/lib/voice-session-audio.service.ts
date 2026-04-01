@@ -52,14 +52,14 @@ export class VoiceSessionAudioService {
           channelCount: this.targetChannels,
           sampleRate: this.targetSampleRate,
           echoCancellation: true,
-          noiseSuppression: true
-        }
+          noiseSuppression: true,
+        },
       });
 
       // Create audio context
       this.audioContext = new AudioContext({ sampleRate: this.targetSampleRate });
       await this.ensureAudioWorkletModule(this.audioContext);
-      
+
       // Create nodes
       this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
       this.analyserNode = this.audioContext.createAnalyser();
@@ -75,21 +75,22 @@ export class VoiceSessionAudioService {
           processorOptions: {
             channelCount: this.targetChannels,
           },
-        }
+        },
       );
-      this.audioWorkletNode.port.onmessage = (event: MessageEvent<AudioCaptureProcessorMessage>) => {
+      this.audioWorkletNode.port.onmessage = (
+        event: MessageEvent<AudioCaptureProcessorMessage>,
+      ) => {
         this.handleWorkletMessage(event.data);
       };
 
       this.silentGainNode = this.audioContext.createGain();
       this.silentGainNode.gain.value = 0;
-      
+
       // Connect the nodes
       this.sourceNode.connect(this.analyserNode);
       this.analyserNode.connect(this.audioWorkletNode);
       this.audioWorkletNode.connect(this.silentGainNode);
       this.silentGainNode.connect(this.audioContext.destination);
-
     } catch (error) {
       console.error('Failed to initialize audio capture:', error);
       this.cleanup();
@@ -97,10 +98,7 @@ export class VoiceSessionAudioService {
     }
   }
 
-  startCapture(
-    levelCallback?: AudioLevelCallback,
-    dataCallback?: AudioDataCallback
-  ): void {
+  startCapture(levelCallback?: AudioLevelCallback, dataCallback?: AudioDataCallback): void {
     if (!this.audioContext || !this.audioWorkletNode) {
       throw new Error('Audio capture not initialized');
     }
@@ -109,12 +107,11 @@ export class VoiceSessionAudioService {
     this.dataCallback = dataCallback;
     this.isCapturing = true;
     this.isMuted = false;
-    
+
     // Resume audio context if suspended
     if (this.audioContext.state === 'suspended') {
       void this.audioContext.resume();
     }
-    
   }
 
   stopCapture(): void {
@@ -155,19 +152,19 @@ export class VoiceSessionAudioService {
       this.sourceNode.disconnect();
       this.sourceNode = undefined;
     }
-    
+
     if (this.analyserNode) {
       this.analyserNode.disconnect();
       this.analyserNode = undefined;
     }
-    
+
     if (this.audioContext) {
       void this.audioContext.close();
       this.audioContext = undefined;
     }
-    
+
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach(track => track.stop());
+      this.mediaStream.getTracks().forEach((track) => track.stop());
       this.mediaStream = undefined;
     }
 
@@ -175,7 +172,6 @@ export class VoiceSessionAudioService {
       URL.revokeObjectURL(this.workletModuleUrl);
       this.workletModuleUrl = undefined;
     }
-    
   }
 
   private async ensureAudioWorkletModule(audioContext: AudioContext): Promise<void> {
@@ -239,14 +235,14 @@ export class VoiceSessionAudioService {
 
   private updateAudioLevel(audioData: Float32Array): void {
     if (!this.levelCallback) return;
-    
+
     // Calculate RMS level
     let sum = 0;
     for (let i = 0; i < audioData.length; i++) {
       sum += audioData[i] * audioData[i];
     }
     const rms = Math.sqrt(sum / audioData.length);
-    
+
     // Convert to percentage and smooth
     const level = Math.min(100, rms * 100 * 5); // Amplify for better visualization
     this.levelCallback(level);
@@ -254,13 +250,13 @@ export class VoiceSessionAudioService {
 
   private convertToPCM16(floatData: Float32Array): Int16Array {
     const pcm16 = new Int16Array(floatData.length);
-    
+
     for (let i = 0; i < floatData.length; i++) {
       // Convert float (-1 to 1) to int16 (-32768 to 32767)
       const sample = Math.max(-1, Math.min(1, floatData[i]));
-      pcm16[i] = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+      pcm16[i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
     }
-    
+
     return pcm16;
   }
 

@@ -77,7 +77,11 @@ export class PdfApiService {
     if (pdfPath) {
       const sourceKey = this.getProfileSourceKey();
 
-      if (this.uploadedFiles.length > 0 && !this.profile.pdf_flush && this.uploadedSourceKey === sourceKey) {
+      if (
+        this.uploadedFiles.length > 0 &&
+        !this.profile.pdf_flush &&
+        this.uploadedSourceKey === sourceKey
+      ) {
         console.log(
           `[PdfApiService] PDF ready: reusing uploaded file ${this.uploadedFiles.map((file) => file.fileId).join(', ')}.`,
         );
@@ -94,12 +98,18 @@ export class PdfApiService {
     }
 
     if (selectedFiles.length === 0) {
-      throw new Error('No uploaded PDF document is available yet. Ask the user to choose one or more PDF files first.');
+      throw new Error(
+        'No uploaded PDF document is available yet. Ask the user to choose one or more PDF files first.',
+      );
     }
 
     const sourceKey = this.getSelectedFilesSourceKey();
 
-    if (this.uploadedFiles.length > 0 && !this.profile.pdf_flush && this.uploadedSourceKey === sourceKey) {
+    if (
+      this.uploadedFiles.length > 0 &&
+      !this.profile.pdf_flush &&
+      this.uploadedSourceKey === sourceKey
+    ) {
       console.log(
         `[PdfApiService] PDF ready: reusing uploaded files ${this.uploadedFiles.map((file) => file.fileId).join(', ')}.`,
       );
@@ -180,7 +190,9 @@ export class PdfApiService {
         ],
       });
 
-      return response.output_text?.trim() || 'I could not find an answer in the uploaded PDF documents.';
+      return (
+        response.output_text?.trim() || 'I could not find an answer in the uploaded PDF documents.'
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error('PDF responses.create failed:', {
@@ -191,13 +203,13 @@ export class PdfApiService {
 
       if (message.includes('404')) {
         throw new Error(
-          `PDF analysis failed because the configured model or deployment was not found on the Responses endpoint. Current PDF model: ${this.config?.pdfApiModel || MODEL_NAME}. Check the Vision Deployment setting and ensure that deployment supports Responses API calls.`
+          `PDF analysis failed because the configured model or deployment was not found on the Responses endpoint. Current PDF model: ${this.config?.pdfApiModel || MODEL_NAME}. Check the Vision Deployment setting and ensure that deployment supports Responses API calls.`,
         );
       }
 
       if (message.includes('400')) {
         throw new Error(
-          `PDF analysis request was rejected by the Responses API. The uploaded file may still be processing, the deployment may not support PDF input_file content, or the file was uploaded with an unsupported purpose. Current PDF model: ${this.config?.pdfApiModel || MODEL_NAME}. Check the browser console for the detailed server error.`
+          `PDF analysis request was rejected by the Responses API. The uploaded file may still be processing, the deployment may not support PDF input_file content, or the file was uploaded with an unsupported purpose. Current PDF model: ${this.config?.pdfApiModel || MODEL_NAME}. Check the browser console for the detailed server error.`,
         );
       }
 
@@ -271,7 +283,9 @@ export class PdfApiService {
 
     this.uploadedFiles = uploadedFiles;
     this.uploadedSourceKey = sourceKey;
-    console.log(`[PdfApiService] PDF ready: ${uploadedFiles.map((file) => file.fileId).join(', ')}`);
+    console.log(
+      `[PdfApiService] PDF ready: ${uploadedFiles.map((file) => file.fileId).join(', ')}`,
+    );
     return uploadedFiles.map((file) => file.fileId);
   }
 
@@ -350,9 +364,7 @@ export class PdfApiService {
     return this.normalizeAppraisalSummaryData(parsedPayload);
   }
 
-  private normalizeAppraisalSummaryData(
-    payload: Record<string, unknown>,
-  ): IAppraisalSummaryData {
+  private normalizeAppraisalSummaryData(payload: Record<string, unknown>): IAppraisalSummaryData {
     const normalizedData: IAppraisalSummaryData = {};
 
     for (const [key, value] of Object.entries(payload)) {
@@ -366,9 +378,7 @@ export class PdfApiService {
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       const fieldData = value as Record<string, unknown>;
       const fieldValue = fieldData['value'];
-      const pageNumber =
-        fieldData['pageNumber'] ??
-        fieldData['page'];
+      const pageNumber = fieldData['pageNumber'] ?? fieldData['page'];
 
       return {
         value: this.normalizeAppraisalSummaryString(fieldValue),

@@ -60,7 +60,9 @@ export class FoundryAgentService {
       }
 
       this.conversationId = responseBody.conversationId?.trim() || this.conversationId;
-      return responseBody.answer?.trim() || 'I could not get an answer from the Azure AI Foundry agent.';
+      return (
+        responseBody.answer?.trim() || 'I could not get an answer from the Azure AI Foundry agent.'
+      );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
 
@@ -88,7 +90,9 @@ export class FoundryAgentService {
 
   private ensureConfiguration(): void {
     if (!this.config?.proxyEndpoint?.trim()) {
-      throw new Error('A Foundry proxy endpoint is required for backend-based Azure AI Foundry profiles.');
+      throw new Error(
+        'A Foundry proxy endpoint is required for backend-based Azure AI Foundry profiles.',
+      );
     }
 
     if (!(this.profile as any)?.project_endpoint?.trim()) {

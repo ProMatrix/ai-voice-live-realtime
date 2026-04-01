@@ -23,10 +23,7 @@ export class ImageCaptureService {
   private isSetupComplete = false; // To be set by LiveInterfaceService
   private profile = defaultProfile;
   // Callbacks to communicate with LiveInterfaceService
-  public onImageReady: ((imageData: {
-    base64: string;
-    mimeType: string;
-  }) => void) | null = null;
+  public onImageReady: ((imageData: { base64: string; mimeType: string }) => void) | null = null;
 
   constructor() {}
   /**
@@ -369,7 +366,7 @@ export class ImageCaptureService {
     }
     this.imageSendIntervalId = window.setInterval(
       this.sendPeriodicImageData.bind(this),
-      IMAGE_SEND_INTERVAL_MS
+      IMAGE_SEND_INTERVAL_MS,
     );
   }
 
@@ -414,5 +411,3 @@ export class ImageCaptureService {
     return this.imageDataUrl;
   }
 }
-
-

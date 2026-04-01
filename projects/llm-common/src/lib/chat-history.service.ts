@@ -23,7 +23,7 @@ export class ChatHistoryService {
 
   private get savedMessages(): Array<IChatMessage> {
     const messageHistoryString = localStorage.getItem(
-      `${this.profile.profile_title} - chatMessages`
+      `${this.profile.profile_title} - chatMessages`,
     );
     if (messageHistoryString) {
       return JSON.parse(messageHistoryString);
@@ -32,7 +32,7 @@ export class ChatHistoryService {
     }
   }
 
-  private set savedMessages(chatMessageHistory: Array<IChatMessage> | null) {  
+  private set savedMessages(chatMessageHistory: Array<IChatMessage> | null) {
     if (chatMessageHistory) {
       const messages = JSON.stringify(chatMessageHistory);
       localStorage.setItem(`${this.profile.profile_title} - chatMessages`, messages);
@@ -93,7 +93,7 @@ export class ChatHistoryService {
     } else if (sender === 'assistant' || sender === 'AI') {
       messageBubble.classList.add('message-ai');
     }
-    messageBubble.textContent = '...'; 
+    messageBubble.textContent = '...';
     this.chatHistoryMessagesDiv.appendChild(messageBubble);
     this.chatHistoryMessagesDiv.scrollTop = this.chatHistoryMessagesDiv.scrollHeight;
     return messageBubble;

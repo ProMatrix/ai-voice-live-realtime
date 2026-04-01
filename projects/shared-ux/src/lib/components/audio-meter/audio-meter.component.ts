@@ -5,22 +5,20 @@ import { LIVE_ASSISTANT_SERVICE_TOKEN, ILiveAssistantService } from 'llm-common'
   selector: 'lib-audio-meter',
   templateUrl: './audio-meter.component.html',
   styleUrls: ['./audio-meter.component.scss'],
-  standalone: true
+  standalone: true,
 })
 export class AudioMeterComponent implements OnInit, OnDestroy {
   @ViewChild('meterCanvas', { static: true }) meterCanvas!: ElementRef<HTMLCanvasElement>;
-  
+
   private ctx!: CanvasRenderingContext2D | null;
   private currentLevel: number = 0;
   private animationFrameId?: number;
 
-  constructor(
-    @Inject(LIVE_ASSISTANT_SERVICE_TOKEN) private liveAssistant: ILiveAssistantService
-  ) {}
+  constructor(@Inject(LIVE_ASSISTANT_SERVICE_TOKEN) private liveAssistant: ILiveAssistantService) {}
 
   ngOnInit() {
     this.ctx = this.meterCanvas.nativeElement.getContext('2d');
-    
+
     // Subscribe to the unified audio level event from the Common Contract
     this.liveAssistant.onAudioLevelChange((level: number) => {
       // Smooth out the level changes
@@ -42,7 +40,7 @@ export class AudioMeterComponent implements OnInit, OnDestroy {
     // Baseline size (idle)
     const baseRadius = width * 0.3;
     // Volume dictates how much it expands beyond the baseline
-    const targetRadius = baseRadius + (this.currentLevel * width * 0.2);
+    const targetRadius = baseRadius + this.currentLevel * width * 0.2;
 
     // Draw the pulsating circle to mimic azure-voice-live
     this.ctx.beginPath();

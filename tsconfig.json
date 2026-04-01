@@ -7,10 +7,10 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "paths": {
-      "llm-common": ["./dist/llm-common"],
-      "llm-google": ["./dist/llm-google"],
-      "llm-microsoft": ["./dist/llm-microsoft"],
-      "shared-ux": ["./dist/shared-ux"]
+      "llm-common": ["./projects/llm-common/src/public-api"],
+      "llm-google": ["./projects/llm-google/src/public-api"],
+      "llm-microsoft": ["./projects/llm-microsoft/src/public-api"],
+      "shared-ux": ["./projects/shared-ux/src/public-api"]
     },
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,

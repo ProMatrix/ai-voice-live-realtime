@@ -16,7 +16,13 @@ import {
 } from './constants';
 import { base64ToArrayBuffer, sleep } from './utils';
 import { defaultProfile } from 'llm-common';
-import { IProfile, IChatMessage, IDialogue, ILiveAssistantService, ConnectionState } from 'llm-common';
+import {
+  IProfile,
+  IChatMessage,
+  IDialogue,
+  ILiveAssistantService,
+  ConnectionState,
+} from 'llm-common';
 import { convertPdfFileToJpg, convertPdfUrlToJpg } from './pdf-2-jpgs';
 
 @Injectable({ providedIn: 'root' })
@@ -76,8 +82,8 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
   public async initializeSession(profile: IProfile): Promise<void> {
     try {
       this.profile = profile;
-      this.systemInstructions = "Generic System Config";
-      this.promptPreamble = "Generic Preamble";
+      this.systemInstructions = 'Generic System Config';
+      this.promptPreamble = 'Generic Preamble';
       this.dialogueUtterance = this.parseDialogue(this.promptPreamble);
       await this.connect();
     } catch (error) {
@@ -279,11 +285,11 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
    * @returns A Promise that resolves to true if connection is successful or pending setup, false otherwise.
    */
   public async connect(): Promise<void> {
-     await this.connectToGeminiIfNeeded();
+    await this.connectToGeminiIfNeeded();
   }
 
   public async disconnect(): Promise<void> {
-     await this.closeSession(true);
+    await this.closeSession(true);
   }
 
   async connectToGeminiIfNeeded(): Promise<boolean> {
@@ -398,10 +404,7 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
             const audioArrayBuffer = base64ToArrayBuffer(part.inlineData.data);
             this.onAudioData?.(audioArrayBuffer);
           } catch (e) {
-            console.error(
-              '[GeminiSessionService] Error decoding base64 audio from server:',
-              e,
-            );
+            console.error('[GeminiSessionService] Error decoding base64 audio from server:', e);
           }
         } else if (part.inlineData?.data) {
           console.warn(
@@ -450,9 +453,7 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
     }
 
     // Start the reconnect flow
-    console.log(
-      '[GeminiSessionService] Connection lost; scheduling automatic reconnect...',
-    );
+    console.log('[GeminiSessionService] Connection lost; scheduling automatic reconnect...');
 
     // Kick off reconnect attempts (will respect max attempts and backoff)
     setTimeout(() => {
@@ -657,12 +658,12 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
   }
 
   public sendAudio(audio: ArrayBuffer): void {
-     if (this.session) {
-       this.sendRealtimeInput({
-          mimeType: 'audio/pcm;rate=16000',
-          data: this.arrayBufferToBase64(audio)
-       });
-     }
+    if (this.session) {
+      this.sendRealtimeInput({
+        mimeType: 'audio/pcm;rate=16000',
+        data: this.arrayBufferToBase64(audio),
+      });
+    }
   }
 
   private arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -670,7 +671,7 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
     const bytes = new Uint8Array(buffer);
     const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
+      binary += String.fromCharCode(bytes[i]);
     }
     return window.btoa(binary);
   }
@@ -749,4 +750,3 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
     return this.isSetupComplete;
   }
 }
-

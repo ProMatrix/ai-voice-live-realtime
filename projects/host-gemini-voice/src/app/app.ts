@@ -1,9 +1,15 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatWindowComponent } from 'shared-ux';
-import { LiveInterfaceService, defaultProfile, IProfile, FIFTEEN_HUNDRED_MS, ONE_SECOND, PROFILES_URL, sleep } from 'llm-common';
-
-
+import {
+  LiveInterfaceService,
+  defaultProfile,
+  IProfile,
+  FIFTEEN_HUNDRED_MS,
+  ONE_SECOND,
+  PROFILES_URL,
+  sleep,
+} from 'llm-common';
 
 import { version } from '../../../../package.json';
 
@@ -812,4 +818,3 @@ export class App implements OnInit {
     return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
   }
 }
-

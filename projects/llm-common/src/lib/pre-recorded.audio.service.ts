@@ -191,4 +191,3 @@ export class PreRecordedAudioService {
     requestAnimationFrame(detect);
   }
 }
-

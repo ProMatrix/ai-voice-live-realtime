@@ -41,63 +41,32 @@
   <body>
     <h1>Profile Showcase</h1>
     <div id="buttonList">
-      <button style="width: 250px" onclick="startMeUp('pdf-extraction')">pdf-extraction</button>
-      <button style="width: 250px" onclick="startMeUp('programming-essentials')">
-        programming-essentials
-      </button>
-
-      <button style="width: 250px" onclick="startMeUp('developer-researcher')">
-        developer-researcher
-      </button>
-      <button style="width: 250px" onclick="startMeUp('developer-assistant')">
-        developer-assistant
-      </button>
-      <button style="width: 250px" onclick="startMeUp('software-demo-pre')">
-        software-demo-preview
-      </button>
+      <button style="width: 250px" onclick="startMeUp('railway-timetabling-agent')">railway-timetabling-agent</button>       
+      <button style="width: 250px" onclick="startMeUp('railway-timetabling-FAQ')">railway-timetabling-FAQ</button>      
+      <button style="width: 250px" onclick="startMeUp('microsoft-AI-discussion')">microsoft-AI-discussion</button>      
+      <button style="width: 250px" onclick="startMeUp('interactive-AI-discussion')">interactive-AI-discussion</button>
+      <button style="width: 250px" onclick="startMeUp('developer-assistant')">developer-assistant</button>
+      <button style="width: 250px" onclick="startMeUp('pdf-appraisal-extraction')">pdf-appraisal-extraction</button>                 
+      <button style="width: 250px" onclick="startMeUp('programming-essentials')">programming-essentials</button>      
+      <button style="width: 250px" onclick="startMeUp('software-demo-pre')">software-demo-preview</button>
       <button style="width: 250px" onclick="startMeUp('software-demo')">software-demo</button>
-      <button style="width: 250px" onclick="startMeUp('railway-timetabling-FAQ')">
-        railway-timetabling-FAQ
-      </button>
-      <button style="width: 250px" onclick="startMeUp('goldenshield-insurance-agent')">
-        goldenshield-insurance-agent
-      </button>
       <button style="width: 250px" onclick="startMeUp('ai-tutor-gmail')">ai-tutor-gmail</button>
-      <button style="width: 250px" onclick="startMeUp('microsoft-AI-quiz')">
-        microsoft-AI-quiz
-      </button>
-      <button style="width: 250px" onclick="startMeUp('microsoft-AI-discussion')">
-        microsoft-AI-discussion
-      </button>
-      <button style="width: 250px" onclick="startMeUp('microsoft-AI-QandA')">
-        microsoft-AI-QandA
-      </button>
-      <button style="width: 250px" onclick="registration()">registration</button>
       <p></p>
-
-      <!-- <button style="width: 250px;" onclick="viewDocument('assets/profiles/programming-essentials/JavaScript_Programming_Essentials_for_AI-V1.pdf')">ai-programming-PDF</button>
-        <button style="width: 250px;" onclick="viewDocument('assets/profiles/railway-timetabling-FAQ/railway-timetabling-and-capacity-v1.pdf')">railway-timetabling-PDF</button>        
-        <button style="width: 250px;" onclick="viewDocument('assets/profiles/goldenshield-insurance-agent/index.html')">goldenshield-insurance-HTML</button>         -->
-
-      <!-- <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-extraction/WV2026-018.pdf')">WV2026-018</button>
-        <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-extraction/WV2026-017.pdf')">WV2026-017</button>        
-        <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-extraction/WV2026-016.pdf')">WV2026-016</button>         -->
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/programming-essentials/JavaScript_Programming_Essentials_for_AI-V1.pdf')">ai-programming-PDF</button>
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/railway-timetabling-FAQ/railway-timetabling-and-capacity.pdf')">railway-timetabling-PDF</button>        
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/goldenshield-insurance-agent/index.html')">goldenshield-insurance-HTML</button>        
+      <p></p>
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-appraisal-extraction/WV2026-018.pdf')">WV2026-018</button>
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-appraisal-extraction/WV2026-017.pdf')">WV2026-017</button>        
+      <button style="width: 250px;" onclick="viewDocument('assets/profiles/pdf-appraisal-extraction/WV2026-016.pdf')">WV2026-016</button>        
     </div>
 
+    
     <div id="version"></div>
   </body>
 
   <script>
-    const version = '21.2.3';
-    function registration() {
-      // origin = 'http://localhost:4200'; // for local testing with port 8080
-      const url = `${location.origin}/?apiKey=AIzaSyDvm5HSVADEn_d9q99Z98tooFZoZF2XqZc&audioApiKey=sk_09da21308f0ecbd040354034828a8dc002f86a606709ad05&profile=developer-assistant`;
-      // remote...
-      // const url = `${origin}/?apiKey=AIzaSyCF46KdyMr9KMI7PUErEjGpQMquL7VKJt0&audioApiKey=sk_09da21308f0ecbd040354034828a8dc002f86a606709ad05&profile=developer-assistant`;
-      // deployed...
-      // const url = `${origin}/?apiKey=AIzaSyAE96ljhOLVoc0_qq0rIaqpGHX56upSj3o&audioApiKey=sk_09da21308f0ecbd040354034828a8dc002f86a606709ad05&profile=developer-assistant`;
-      location.href = url;
-    }
+    const version = '21.2.2';
 
     function viewDocument(document) {
       const url = `${location.origin}/${document}`;

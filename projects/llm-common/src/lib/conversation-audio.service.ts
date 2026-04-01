@@ -67,7 +67,7 @@ export class ConversationAudioService {
   }
 
   /**
-  * Initializes the ConversationAudioService with a profile.
+   * Initializes the ConversationAudioService with a profile.
    * @param profile The active profile settings used for audio configuration.
    */
 
@@ -104,7 +104,7 @@ export class ConversationAudioService {
   }
 
   /**
-  * Enable or disable verbose logging from the ConversationAudioService.
+   * Enable or disable verbose logging from the ConversationAudioService.
    * @param logOutput True to enable debug logging.
    */
 
@@ -532,7 +532,10 @@ export class ConversationAudioService {
     const audioArrayBuffer = this.aiAudioQueue.shift()!;
 
     if (audioArrayBuffer.byteLength < 2) {
-      console.warn(`[ConversationAudioService] audioArrayBuffer is too short. Skipping.`, this.logOutput);
+      console.warn(
+        `[ConversationAudioService] audioArrayBuffer is too short. Skipping.`,
+        this.logOutput,
+      );
       this._isPlayingAIaudio = false;
       this.playNextInQueue();
       return;
