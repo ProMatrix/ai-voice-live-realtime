@@ -51,6 +51,8 @@
       <button style="width: 250px" onclick="startMeUp('software-demo-pre')">software-demo-preview</button>
       <button style="width: 250px" onclick="startMeUp('software-demo')">software-demo</button>
       <button style="width: 250px" onclick="startMeUp('ai-tutor-gmail')">ai-tutor-gmail</button>
+      <button style="width: 250px" onclick="registration()">registration</button>
+
       <p></p>
       <button style="width: 250px;" onclick="viewDocument('assets/profiles/programming-essentials/JavaScript_Programming_Essentials_for_AI-V1.pdf')">ai-programming-PDF</button>
       <button style="width: 250px;" onclick="viewDocument('assets/profiles/railway-timetabling-FAQ/railway-timetabling-and-capacity.pdf')">railway-timetabling-PDF</button>        
@@ -82,5 +84,10 @@
     document.addEventListener('DOMContentLoaded', (event) => {
       document.getElementById('version').textContent = version;
     });
+
+    function registration() {
+      const url = `${location.origin}/?apiKey=AIzaSyAE96ljhOLVoc0_qq0rIaqpGHX56upSj3o&audioApiKey=sk_09da21308f0ecbd040354034828a8dc002f86a606709ad05&profile=developer-assistant`;
+      window.open(url, '_blank');
+    }    
   </script>
 </html>

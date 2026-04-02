@@ -2063,27 +2063,18 @@ export class LiveInterfaceService {
 
   private async handleConnect() {
     try {
-      const config = this.getVoiceConfiguration();
-      // await this.voiceAssistant.connect(config);
-      // await this.voiceAssistant.startConversation();
-      // this.voiceAssistant.setOutputVolume(this.aiVolume);
-      // this.voiceAssistant.setOutputMuted(!this.isSpeakerOutputEnabled);
+      // Configuration moved to ILiveAssistantService implementation
+      await this.liveAssistantService.connect();
     } catch (error) {}
   }
 
   private async handleDualConnect(): Promise<void> {
-    const assistantConfig = this.getVoiceConfigurationForDiscussionAgent('assistant-agent');
-    const userConfig = this.getVoiceConfigurationForDiscussionAgent('user-agent');
-
-    // await this.voiceAssistant.connect(assistantConfig);
-    // await this.userAssistant.connect(userConfig);
-    // await this.voiceAssistant.startConversation();
-    // await this.userAssistant.startConversation();
-
-    // this.voiceAssistant.setOutputVolume(this.aiVolume);
-    // this.userAssistant.setOutputVolume(this.simVolume);
-    // this.voiceAssistant.setOutputMuted(!this.isSpeakerOutputEnabled);
-    // this.userAssistant.setOutputMuted(!this.isSpeakerOutputEnabled);
+    // Configuration moved to ILiveAssistantService implementation
+    try {
+      await this.liveAssistantService.connect();
+    } catch (error) {}
+    // The dual assistant logic (assistantConfig and userConfig) should be handled
+    // by a specialized service if needed, this uses a unified connection for now.
   }
 
   private async handleDisconnect(): Promise<void> {

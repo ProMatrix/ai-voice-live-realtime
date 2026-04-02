@@ -41,7 +41,26 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
 
   public async initializeSession(profile: IProfile): Promise<void> {
     this.profile = profile;
-    this.config = {}; // Can pull from environment / storage as needed
+    const defaultVoiceApiKey = '';
+    const defaultVoiceApiEndpoint = '';
+    const voiceApiKey = localStorage.getItem('voiceApiKey') ?? defaultVoiceApiKey;
+    const voiceApiEndpoint = localStorage.getItem('voiceApiEndpoint') ?? defaultVoiceApiEndpoint;
+    
+    if (!voiceApiEndpoint) {
+      alert(`Error: Voice API Endpoint is required!`);
+      throw new Error('Voice API Endpoint is required!');
+    }
+
+    if (!voiceApiKey) {
+      alert(`Error: Voice API Key is required!`);
+      throw new Error('Voice API Key is required!');
+    }
+
+    this.config = {
+      voiceApiEndpoint,
+      voiceApiKey,
+    };
+    
     // Configure and connect the Voice Live client/session.
     await this.connect();
   }
