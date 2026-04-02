@@ -173,7 +173,26 @@
     <canvas class="canvas" id="capture-canvas"></canvas>
 
     <div class="chat-history-container">
-      <lib-chat-window></lib-chat-window>
+      <div class="chat-history-messages" id="chat-history-messages"></div>
+    </div>
+
+    <div class="audio-levels">
+      <div class="audio-level">
+          <div id="userbot-audio-level" class="level-meter mic-level">
+          <svg class="level-circle" width="160" height="160" viewBox="0 0 120 120">
+            <circle class="level-circle-bg" cx="60" cy="60" r="55" />
+            <circle class="level-circle-value" cx="60" cy="60" r="55" stroke-dasharray="314" [attr.stroke-dashoffset]="(1 - liveInterface.audioLevel / 100) * 314" />
+          </svg>
+        </div>
+      </div>
+      <div class="audio-level">
+        <div id="assistantbot-audio-level" class="level-meter speaker-level">
+          <svg class="level-circle" width="150" height="150" viewBox="0 0 120 120">
+            <circle class="level-circle-bg" cx="60" cy="60" r="57" />
+            <circle class="level-circle-value" cx="60" cy="60" r="57" stroke-dasharray="314" [attr.stroke-dashoffset]="(1 - liveInterface.outputAudioLevel / 100) * 314" />
+          </svg>
+        </div>
+      </div>
     </div>
 
     <div
@@ -212,10 +231,6 @@
       *ngIf="isPanelVisible('settings')"
     ></div>
 
-    @if (showSidePanel()) {
-      <img class="side-image fade-in" src="assets/img/side-image-still.png" alt="side-image" />
-    }
-
     @if (profile.show_chatbots) {
       <img
         class="hostbot-online-1 fade-in"
@@ -252,13 +267,6 @@
     }
 
     @if (liveInterface.showGuestActive()) {
-      @if (showSidePanel()) {
-        <img
-          class="side-image fade-in-out-continuous"
-          src="assets/img/side-image-active.png"
-          alt="side-image"
-        />
-      }
       <img
         class="guestbot-online-1 fade-in-out-continuous"
         src="assets/img/guestbot-active.gif"
@@ -349,4 +357,5 @@
     </div>
   </div>
 </div>
+
 

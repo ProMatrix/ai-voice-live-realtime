@@ -89,15 +89,7 @@
   position: absolute;
   top: 30px;
   width: 1000px;
-  border: 2px solid #99d7e6;  
-}
-
-.prototype .side-image {
-  height: 680px;
-  left: 938.5px;
-  object-fit: cover;
-  position: absolute;
-  top: 35px;
+  border: 2px solid #99d7e6;
 }
 
 .prototype .hostbot-online-1 {
@@ -435,4 +427,56 @@
 #text-input-container {
   display: flex;
   align-items: center;
+}
+.audio-levels {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.audio-level {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.level-meter {
+  width: 160px;
+  height: 160px;
+  align-items: center;
+  justify-content: center;
+}
+
+.level-circle {
+  transform: rotate(-90deg);
+}
+
+.level-circle-bg {
+  fill: none;
+  stroke: #e9ecef;
+  stroke-width: 5;
+}
+
+.level-circle-value {
+  fill: none;
+  stroke: #2b6482;
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.mic-level {
+  position: absolute;
+  z-index: 1;
+  top: 183px;
+  left: -5px;
+}
+
+.speaker-level {
+  position: absolute;
+  z-index: 1;
+  top: 188px;
+  left: 917px;
 }

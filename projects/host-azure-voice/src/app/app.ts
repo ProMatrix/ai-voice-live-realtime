@@ -1,5 +1,4 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ChatWindowComponent } from 'shared-ux';
 import { CommonModule } from '@angular/common';
 import {
   LiveInterfaceService,
@@ -25,7 +24,7 @@ import { version } from '../../../../package.json';
 
 @Component({
   selector: 'app-root',
-  imports: [ChatWindowComponent, CommonModule],
+  imports: [CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -854,13 +853,12 @@ export class App implements OnInit, OnDestroy {
   toggleChatbotImages() {
     const userbotImage = document.getElementById('userbot-image');
     const assistantbotImage = document.getElementById('assistantbot-image');
-    const sideImage = document.querySelector('.side-image') as HTMLElement;
 
     const userbotVumeter = document.getElementById('userbot-audio-level');
     const assistantbotVumeter = document.getElementById('assistantbot-audio-level');
 
     toggleFadeClasses(
-      [userbotVumeter, assistantbotVumeter, userbotImage, assistantbotImage, sideImage],
+      [userbotVumeter, assistantbotVumeter, userbotImage, assistantbotImage],
       this.isChatbotHidden,
     );
   }

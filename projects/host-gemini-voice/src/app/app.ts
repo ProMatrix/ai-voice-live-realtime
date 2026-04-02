@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChatWindowComponent } from 'shared-ux';
 import {
   LiveInterfaceService,
   defaultProfile,
@@ -21,7 +20,7 @@ import { version } from '../../../../package.json';
 
 @Component({
   selector: 'app-root',
-  imports: [ChatWindowComponent, CommonModule],
+  imports: [CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -578,25 +577,23 @@ export class App implements OnInit {
   toggleChatbotImages() {
     const hostbotImage = document.getElementById('hostbot-image');
     const guestbotImage = document.getElementById('guestbot-image');
-    const sideImage = document.querySelector('.side-image') as HTMLElement;
 
-    if (hostbotImage && guestbotImage && sideImage) {
-      if (this.isChatbotHidden) {
-        hostbotImage.classList.remove('fade-in');
-        guestbotImage.classList.remove('fade-in');
-        sideImage.classList.remove('fade-in');
-        hostbotImage.classList.add('fade-out');
-        guestbotImage.classList.add('fade-out');
-        sideImage.classList.add('fade-out');
-      } else {
-        hostbotImage.classList.remove('fade-out');
-        guestbotImage.classList.remove('fade-out');
-        sideImage.classList.remove('fade-out');
-        hostbotImage.classList.add('fade-in');
-        guestbotImage.classList.add('fade-in');
-        sideImage.classList.add('fade-in');
+    const userbotVumeter = document.getElementById('userbot-audio-level');
+    const assistantbotVumeter = document.getElementById('assistantbot-audio-level');
+
+    const elements = [hostbotImage, guestbotImage, userbotVumeter, assistantbotVumeter];
+
+    elements.forEach((el) => {
+      if (el) {
+        if (this.isChatbotHidden) {
+          el.classList.remove('fade-in');
+          el.classList.add('fade-out');
+        } else {
+          el.classList.remove('fade-out');
+          el.classList.add('fade-in');
+        }
       }
-    }
+    });
   }
 
   toggleTranscriptions() {
@@ -818,3 +815,4 @@ export class App implements OnInit {
     return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
   }
 }
+

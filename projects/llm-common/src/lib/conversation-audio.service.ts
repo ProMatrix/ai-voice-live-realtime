@@ -51,9 +51,8 @@ export class ConversationAudioService {
   public onPlaybackStarted: (() => void) | null = null;
   public onPlaybackStopped: (() => void) | null = null;
   public onAudioSystemError: ((message: string) => void) | null = null;
-  public onOutputLevelChange: ((level: number) => void) | null = null;
-
-  // Jitter buffer properties
+    public onOutputLevelChange: ((level: number) => void) | null = null;
+    public onInputLevelChange: ((level: number) => void) | null = null;
   private jitterBuffer: ArrayBuffer[] = [];
   private jitterBufferDelay = 100; // ms, tune this value
   private playbackStartTime: number | null = null;
@@ -674,3 +673,4 @@ export class ConversationAudioService {
     }
   }
 }
+

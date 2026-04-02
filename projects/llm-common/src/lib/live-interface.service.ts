@@ -1316,9 +1316,9 @@ export class LiveInterfaceService {
     this.conversationAudioService.onOutputLevelChange = (level: number) => {
       this.outputAudioLevel = level;
     };
-
-    // Speech detection change handler (not used currently)
-    this.conversationAudioService.onSpeechDetectedChange = this.onSpeechDetectedChange.bind(this);
+      this.conversationAudioService.onInputLevelChange = (level: number) => {
+        this.audioLevel = level;
+      };
 
     // ImageCaptureService Callbacks
     this.imageCaptureService.onImageReady = this.onImageReady.bind(this);
