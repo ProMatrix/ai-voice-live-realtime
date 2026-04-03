@@ -129,6 +129,16 @@
             "tsConfig": "projects/host-azure-voice/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "shared-profiles/common",
+                  "output": "assets/profiles"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "shared-profiles/host-azure-voice",
+                  "output": "assets/profiles"
+                },
               {
                 "glob": "**/*",
                 "input": "projects/host-azure-voice/public"
@@ -196,6 +206,16 @@
             "tsConfig": "projects/host-gemini-voice/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "shared-profiles/common",
+                  "output": "assets/profiles"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "shared-profiles/host-gemini-voice",
+                  "output": "assets/profiles"
+                },
               {
                 "glob": "**/*",
                 "input": "projects/host-gemini-voice/public"
