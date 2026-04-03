@@ -76,6 +76,12 @@ export interface ILiveAssistantService {
   onAudioReceived(callback: (audio: ArrayBuffer) => void): void;
 
   /**
+   * Subscribes to provider setup completion so the shared live interface can
+   * resume recording and start screen-share image delivery.
+   */
+  onSetupComplete(callback: () => void): void;
+
+  /**
    * Subscribes to completed or streaming text messages.
    */
   onMessageReceived(callback: (msg: IChatMessage, isStreaming?: boolean) => void): void;

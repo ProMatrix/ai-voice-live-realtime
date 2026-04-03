@@ -1366,6 +1366,8 @@ export class LiveInterfaceService {
     this.liveAssistantService.onAudioReceived((audio: ArrayBuffer) => {
       this.conversationAudioService.playAudio(audio);
     });
+
+    this.liveAssistantService.onSetupComplete(this.onSetupComplete.bind(this));
   }
 
   private async onAudioDataReady(data: ArrayBuffer) {
@@ -1478,6 +1480,7 @@ export class LiveInterfaceService {
 
   private async onSetupComplete() {
     console.log('[LiveInterfaceService] Setup complete. Ready to talk or Upload Image');
+    this.imageCaptureService.setIsSetupComplete(true);
     // If we intended to be recording before a disconnect, resume now
     if (this.resumeRecordingAfterReconnect) {
       this.resumeRecordingAfterReconnect = false;
@@ -1486,6 +1489,7 @@ export class LiveInterfaceService {
       try {
         // this.conversationAudioService.setSession(this.geminiSessionService.getSession());
         this.conversationAudioService.setIsRecording(true);
+        this.imageCaptureService.setIsRecording(true);
       } catch (e) {
         console.warn(
           '[LiveInterfaceService] Error setting session on ConversationAudioService before resume:',
@@ -1494,12 +1498,21 @@ export class LiveInterfaceService {
       }
     }
 
+    console.log('[LiveInterfaceService] onSetupComplete state:', {
+      isRecording: this.isRecording,
+      hasImagePreview: !!this.imagePreview?.src,
+      resumeRecordingAfterReconnect: this.resumeRecordingAfterReconnect,
+    });
+
     if (this.isRecording) {
-      // Session is ready, now we can proceed with starting the microphone etc.
-      // await this.startRecordingLive();
+      console.log('[LiveInterfaceService] Starting periodic image sending for active recording.');
+      this.imageCaptureService.startPeriodicImageSending();
     } else if (this.imagePreview && this.imagePreview.src) {
       // Check if an image is loaded
+      console.log('[LiveInterfaceService] Starting periodic image sending for loaded image preview.');
       this.imageCaptureService.startPeriodicImageSending();
+    } else {
+      console.warn('[LiveInterfaceService] Setup complete but periodic image sending was not started.');
     }
   }
 
@@ -2661,6 +2674,8 @@ export class LiveInterfaceService {
 
     this.isRecording = true;
     this.conversationAudioService.setIsRecording(true);
+    this.imageCaptureService.setIsRecording(true);
+    this.imageCaptureService.setIsSetupComplete(false);
     this.audioLevel = 0;
 
     this.setupServiceCallbacks();
@@ -2739,6 +2754,7 @@ export class LiveInterfaceService {
     this.isSharing = false;
     this.conversationAudioService.setIsRecording(false);
     this.imageCaptureService.setIsRecording(false);
+    this.imageCaptureService.setIsSetupComplete(false);
     this.imageCaptureService.stopPeriodicImageSending();
     this.conversationAudioService.cleanupAudioNodes();
     this.conversationAudioService.clearAudioQueueAndStopPlayback();

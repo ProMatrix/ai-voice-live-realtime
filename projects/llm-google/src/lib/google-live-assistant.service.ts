@@ -55,7 +55,7 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
   private schedulingForcedDisconnect = false;
   private schedulingDisconnectMs = ONE_MINUTE;
   // Callbacks to communicate with LiveInterfaceService
-  public onSetupComplete: (() => void) | null = null;
+  private _setupCompleteCallback: (() => void) | null = null;
   public onSessionResumptionUpdate: ((newHandle: string) => void) | null = null;
   public onInputTranscription: ((text: string) => void) | null = null;
   public onOutputTranscription: ((text: string) => void) | null = null;
@@ -428,7 +428,8 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
     if (e?.setupComplete) {
       this.isAutoReconnecting = false;
       this.isSetupComplete = true;
-      this.onSetupComplete?.();
+      console.log('[GoogleLiveAssistantService] Received setupComplete event.');
+      this._setupCompleteCallback?.();
     }
     if (e?.serverContent?.modelTurn?.parts) {
       e.serverContent.modelTurn.parts.forEach((part: any) => {
@@ -746,6 +747,10 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
 
   public onAudioReceived(callback: (audio: ArrayBuffer) => void): void {
     this.onAudioData = callback;
+  }
+
+  public onSetupComplete(callback: () => void): void {
+    this._setupCompleteCallback = callback;
   }
 
   public onAudioLevelChange(callback: (level: number) => void): void {

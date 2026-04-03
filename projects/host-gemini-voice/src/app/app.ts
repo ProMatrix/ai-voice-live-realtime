@@ -281,6 +281,7 @@ export class App implements OnInit {
 
     this.profile = (await profileResponse.json()) as IProfile;
     this.profile.profile_file = profileName;
+    this.isSpeakerOn = this.profile.isSpeakerOn;
 
     if (this.profile.pdf_upload) {
       this.pdf_upload_completed = false;
@@ -391,9 +392,7 @@ export class App implements OnInit {
 
     this.trashButton.addEventListener('click', this.onTrashClick.bind(this));
 
-    // Set initial state of speaker button to "on"
-    this.speakerButton.classList.add('active');
-    this.speakerButton.title = 'Audio Output: On';
+  this.updateSpeakerButtonState();
 
     this.speakerButton.addEventListener('click', this.onSpeakerClick.bind(this));
 
@@ -421,6 +420,15 @@ export class App implements OnInit {
     this.videoButton.addEventListener('click', this.onVideoClick.bind(this));
 
     this.audioButton.addEventListener('click', this.onAudioClick.bind(this));
+  }
+
+  private updateSpeakerButtonState() {
+    if (!this.speakerButton) {
+      return;
+    }
+
+    this.speakerButton.classList.toggle('active', this.isSpeakerOn);
+    this.speakerButton.title = `Audio Output: ${this.isSpeakerOn ? 'On' : 'Off'}`;
   }
 
   private async onScreenShareClick() {
@@ -474,21 +482,20 @@ export class App implements OnInit {
   }
 
   private onSpeakerClick() {
-    this.isSpeakerOn = !this.isSpeakerOn; // Toggle the speaker state
-    if (this.speakerButton) {
-      this.speakerButton.classList.toggle('active', this.isSpeakerOn); // Add 'active' class if isSpeakerOn is true
-      this.speakerButton.title = `Audio Output: ${this.isSpeakerOn ? 'On' : 'Off'}`; // Update tooltip
+    this.isSpeakerOn = !this.isSpeakerOn;
+    this.profile.isSpeakerOn = this.isSpeakerOn;
+    this.liveInterface.updateSpeakerState(this.isSpeakerOn);
+    this.updateSpeakerButtonState();
 
-      if (this.isSpeakerOn) {
-        this.liveInterface.aiVolume = this.profile.aiVolume;
-        this.liveInterface.simVolume = this.profile.simVolume;
-      } else {
-        this.liveInterface.aiVolume = 0.0;
-        this.liveInterface.simVolume = 0.0;
-      }
-      this.liveInterface.setAiVolume();
-      this.liveInterface.setSimVolume();
+    if (this.isSpeakerOn) {
+      this.liveInterface.aiVolume = this.profile.aiVolume;
+      this.liveInterface.simVolume = this.profile.simVolume;
+    } else {
+      this.liveInterface.aiVolume = 0.0;
+      this.liveInterface.simVolume = 0.0;
     }
+    this.liveInterface.setAiVolume();
+    this.liveInterface.setSimVolume();
   }
 
   private onHideChatbotClick() {

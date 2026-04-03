@@ -35,6 +35,7 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
   private _messageCallback: ((msg: IChatMessage, isStreaming?: boolean) => void) | null = null;
   private _errorCallback: ((err: string) => void) | null = null;
   private _audioReceivedCallback: ((audio: ArrayBuffer) => void) | null = null;
+  private _setupCompleteCallback: (() => void) | null = null;
 
   // Callbacks used by LiveInterfaceService
   public onTranscriptionReceived: ((text: string) => void) | null = null;
@@ -282,6 +283,9 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
   }
   public onAudioReceived(callback: (audio: ArrayBuffer) => void): void {
     this._audioReceivedCallback = callback;
+  }
+  public onSetupComplete(callback: () => void): void {
+    this._setupCompleteCallback = callback;
   }
   public onMessageReceived(callback: (msg: IChatMessage, isStreaming?: boolean) => void): void {
     this._messageCallback = callback;

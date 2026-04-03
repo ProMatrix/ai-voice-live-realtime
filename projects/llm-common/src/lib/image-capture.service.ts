@@ -361,9 +361,18 @@ export class ImageCaptureService {
       this.imageSendIntervalId = null;
     }
 
-    if (!this.session) {
+    if (!this.isSetupComplete) {
+      console.warn('[ImageCaptureService] Skipping periodic image sending because setup is not complete.');
       return;
     }
+
+    console.log('[ImageCaptureService] Starting periodic image sending interval.', {
+      isRecording: this.isRecording,
+      isSetupComplete: this.isSetupComplete,
+      hasImage: !!this.currentImageBase64,
+      mimeType: this.currentImageMimeType,
+    });
+
     this.imageSendIntervalId = window.setInterval(
       this.sendPeriodicImageData.bind(this),
       IMAGE_SEND_INTERVAL_MS,
@@ -399,11 +408,19 @@ export class ImageCaptureService {
    * if recording, session and image data are available.
    */
   private sendPeriodicImageData() {
-    if (this.isRecording && this.session && this.currentImageBase64 && this.currentImageMimeType) {
+    if (
+      this.isRecording &&
+      this.isSetupComplete &&
+      this.currentImageBase64 &&
+      this.currentImageMimeType
+    ) {
+      console.log('[ImageCaptureService] Sending captured image to live interface.');
       this.onImageReady?.({
         base64: this.currentImageBase64,
         mimeType: this.currentImageMimeType,
       });
+    } else {
+      console.warn('[ImageCaptureService] Skipping image send because required state is missing.');
     }
   }
 
