@@ -205,6 +205,18 @@ export class LiveInterfaceService {
     return messageElement.querySelector('.spoken-message-text');
   }
 
+  private ensureSpokenMessageTextElement(messageElement: HTMLDivElement): HTMLSpanElement {
+    const existingTextElement = this.getSpokenMessageTextElement(messageElement);
+    if (existingTextElement) {
+      return existingTextElement;
+    }
+
+    const textElement = document.createElement('span');
+    textElement.classList.add('spoken-message-text');
+    messageElement.appendChild(textElement);
+    return textElement;
+  }
+
   private getSpokenMessageText(messageElement: HTMLDivElement | null | undefined): string {
     if (!messageElement) {
       return '';
@@ -214,10 +226,8 @@ export class LiveInterfaceService {
   }
 
   private setSpokenMessageText(messageElement: HTMLDivElement, text: string) {
-    const textElement = this.getSpokenMessageTextElement(messageElement);
-    if (textElement) {
-      textElement.textContent = text;
-    }
+    const textElement = this.ensureSpokenMessageTextElement(messageElement);
+    textElement.textContent = text;
   }
 
   private holdSpokenMessage(messageElement: HTMLDivElement | null | undefined) {
@@ -969,9 +979,9 @@ export class LiveInterfaceService {
     this.renderUserText(text);
 
     if (forwardToAssistant) {
-      // Forward UI text input into the active VoiceAssistant session so the
-      // same assistant that handles audio also handles text-only messages.
-      // void this.voiceAssistant.sendMessage(text);
+      void this.liveAssistantService.sendMessage(text).catch((error) => {
+        console.error('[LiveInterfaceService] Error sending text message:', error);
+      });
     }
   }
 
@@ -1296,14 +1306,42 @@ export class LiveInterfaceService {
         this.audioLevel = level;
       }
     };
-    // this.liveAssistantService.onAudioLevelChange(  (audio: ArrayBuffer) => {
-    //   this.conversationAudioService.playAudio(audio);
-    // };
 
-    // this.liveAssistantService.onMessageReceived(  (text: string) => {
-    //   void this.onOutputTranscription(text);
-    // };
-    // };
+    this.liveAssistantService.onMessageReceived((msg: any, isStreaming?: boolean) => {
+      console.log(`[LiveInterfaceService] onMessageReceived: sender=${msg.sender}, text="${msg.text?.substring(0,20)}...", isStreaming=${isStreaming}`);
+      if (msg.sender === 'user') {
+        const fullText = msg.text ?? '';
+        let delta = fullText;
+        if (fullText.startsWith(this.inputTranscription)) {
+          delta = fullText.substring(this.inputTranscription.length);
+        }
+
+        if (delta.length > 0) {
+          void this.onInputTranscription(delta);
+        }
+      }
+
+      if (msg.sender === 'assistant') {
+        const fullText = msg.text ?? '';
+        let delta = fullText;
+        if (fullText.startsWith(this.outputTranscription)) {
+          delta = fullText.substring(this.outputTranscription.length);
+        }
+
+        if (delta.length > 0 || fullText.length === 0) {
+          void this.onOutputTranscription(delta);
+        }
+
+        if (isStreaming === false) {
+          if (this.outputMessageDiv) {
+            this.chatHistoryService.finalizeMessage(this.outputMessageDiv, fullText, 'assistant');
+            this.outputMessageDiv = null;
+            this.outputTranscription = '';
+          }
+          void this.completeAssistantTurn();
+        }
+      }
+    });
 
     // ConversationAudioService callbacks
     const history = this.chatHistoryService.getChatHistory();
@@ -1313,6 +1351,7 @@ export class LiveInterfaceService {
     this.conversationAudioService.onPlaybackStarted = this.onPlaybackStarted.bind(this);
     this.conversationAudioService.onPlaybackStopped = this.onPlaybackStopped.bind(this);
     this.conversationAudioService.onAudioSystemError = this.onAudioSystemError.bind(this);
+    this.conversationAudioService.onSpeechDetectedChange = this.onSpeechDetectedChange.bind(this);
     this.conversationAudioService.onOutputLevelChange = (level: number) => {
       this.outputAudioLevel = level;
     };
@@ -1323,8 +1362,10 @@ export class LiveInterfaceService {
     // ImageCaptureService Callbacks
     this.imageCaptureService.onImageReady = this.onImageReady.bind(this);
 
-    // AzureVoiceLiveService Callbacks
-    // this.liveAssistantService.onAudioLevelChange(  this.onAudioData.bind(this);
+    // LiveAssistantService Audio Callback
+    this.liveAssistantService.onAudioReceived((audio: ArrayBuffer) => {
+      this.conversationAudioService.playAudio(audio);
+    });
   }
 
   private async onAudioDataReady(data: ArrayBuffer) {
@@ -1348,6 +1389,10 @@ export class LiveInterfaceService {
   }
 
   private async onSpeechDetectedChange(detected: boolean) {
+    if (detected && this.allowRudeInteruption && this.conversationAudioService.isPlayingAIaudio) {
+      this.conversationAudioService.clearAudioQueueAndStopPlayback();
+    }
+
     // Use speech detection to drive the visibility of the user spoken-message bubble.
     if (!this.userSpokenMessageDiv || !this.profile.show_chatbots) {
       return;
@@ -1389,7 +1434,7 @@ export class LiveInterfaceService {
       // Ignore data until greetings from AI have been spoken
       return;
     }
-    // this.liveAssistantService .sendImage(imageData);
+    this.liveAssistantService.sendImage(imageData);
   }
 
   private async onRestartRecording() {
@@ -1757,13 +1802,10 @@ export class LiveInterfaceService {
     }, FIVE_SECONDS);
   }
   /**
-   * Performs startup tasks for the service: autostarting the Gemini session,
-   * initializing inactivity detection, setting volumes and displaying splash UI.
+   * Performs UI-facing startup tasks after provider session initialization,
+   * including volume setup, splash display, and session restoration.
    */
   private async systemStartup() {
-    // await this.geminiSessionService.autostart();
-    // await this.geminiDataService.autostart();
-
     const profileTitle = this.profile.profile_title;
     this.aiFullVolume = this.profile.aiFullVolume;
     if (this.profile.isSpeakerOn) {
@@ -2351,7 +2393,10 @@ export class LiveInterfaceService {
     await this.loadDiscussionAgentInstructions();
 
     if (!this.isDualLiveDiscussionProfile()) {
-      await await this.liveAssistantService.initializeSession(this.profile);
+      await this.liveAssistantService.initializeSession(this.profile, {
+        systemInstructions: this.voiceApiInstructions,
+        promptPreamble: this.promptPreamble,
+      });
     }
 
     this.imageCaptureService.initialize(
@@ -2362,6 +2407,9 @@ export class LiveInterfaceService {
       profile,
     );
     this.conversationAudioService.initialize(this.profile);
+    this.conversationAudioService.setInputSampleRate(
+      this.liveAssistantService.getInputAudioSampleRate(),
+    );
     this.preRecordedAudioService.initialize(this.profile);
     if (this.hasFoundryAgentProfile()) {
       this.foundryAgentService.initialize(this.profile, this.getFoundryConfiguration());
@@ -2622,7 +2670,10 @@ export class LiveInterfaceService {
 
     if (!this.profile.pre_recorded && this.profile.conversation_starter === 'assistant-agent') {
       const openingPrompt = this.profile.default_text_message?.trim() || 'Are you ready?';
-      // await this.voiceAssistant.sendMessage(openingPrompt);
+      console.log(`[LiveInterfaceService] Sending opening prompt to liveAssistantService: "${openingPrompt}"`);
+      await this.liveAssistantService.sendMessage(openingPrompt)
+        .then(() => console.log('[LiveInterfaceService] Successfully sent opening prompt.'))
+        .catch(err => console.error('[LiveInterfaceService] Error sending opening prompt:', err));
     }
 
     if (this.profile.pre_recorded) {
@@ -2630,9 +2681,9 @@ export class LiveInterfaceService {
     }
 
     // Ensure the audio system and microphone are active before streaming to Azure Voice Live.
-    // await this.conversationAudioService.initializeAudioSystem();
-    // await this.conversationAudioService.startMicrophone();
-    // console.log('[LiveInterfaceService] Recording started.');
+    await this.conversationAudioService.initializeAudioSystem();
+    await this.conversationAudioService.startMicrophone();
+    console.log('[LiveInterfaceService] Recording started.');
   }
 
   public async prepareProfilePdfForSession(): Promise<void> {

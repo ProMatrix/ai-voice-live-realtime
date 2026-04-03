@@ -87,7 +87,6 @@ export interface IProfile {
   elevenLabsVoiceId: string;
   clear_session_on_startup: boolean;
   show_chatbots: boolean;
-  show_side_panel: boolean;
   auto_start: number;
   default_text_message?: string;
   start_button_mode?: 'record' | 'playback';
@@ -131,7 +130,6 @@ export const defaultProfile: IProfile = {
   elevenLabsVoiceId: '',
   clear_session_on_startup: false,
   show_chatbots: true,
-  show_side_panel: true,
   auto_start: 0,
   default_text_message: '',
   start_button_mode: 'record',

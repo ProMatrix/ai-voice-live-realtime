@@ -239,23 +239,12 @@
         alt="hostbot-online-1"
       />
 
-      @if (profile.show_side_panel) {
-        <img
-          class="guestbot-online-1 fade-in"
-          id="guestbot-image"
-          src="assets/img/guestbot-still.gif"
-          alt="guestbot-online-1"
-        />
-      }
-
-      @if (!profile.show_side_panel) {
-        <img
-          class="guestbot-online-1 fade-in"
-          id="guestbot-image"
-          src="assets/img/guestbot-still-disconnected.gif"
-          alt="guestbot-online-1"
-        />
-      }
+      <img
+        class="guestbot-online-1 fade-in"
+        id="guestbot-image"
+        src="assets/img/guestbot-still.gif"
+        alt="guestbot-online-1"
+      />
     }
 
     @if (liveInterface.showHostActive()) {
@@ -275,8 +264,12 @@
     }
 
     <div id="session-title" class="session-title long-fade-out">AI Realtime</div>
-    <div id="userSpokenMessage" class="spokenMessage fade-in"></div>
-    <div id="aiSpokenMessage" class="spokenMessage fade-in"></div>
+    <div id="userSpokenMessage" class="spokenMessage fade-in">
+      <span id="userSpokenMessageText" class="spoken-message-text"></span>
+    </div>
+    <div id="aiSpokenMessage" class="spokenMessage fade-in">
+      <span id="aiSpokenMessageText" class="spoken-message-text"></span>
+    </div>
 
     <div class="viewing-options-panel">
       <div class="version-section" title="Current Application Version">

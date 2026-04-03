@@ -11,7 +11,9 @@ import { defaultProfile, IProfile } from './interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class ConversationAudioService {
+  private inputSampleRate = TARGET_SAMPLE_RATE;
   private aiAudioContext: AudioContext | null = null;
+  private currentPlaybackSource: AudioBufferSourceNode | null = null;
   private micStream: MediaStream | null = null;
   private micSourceNode: MediaStreamAudioSourceNode | null = null;
   private audioWorkletNode: AudioWorkletNode | null = null;
@@ -21,7 +23,6 @@ export class ConversationAudioService {
   private micGainNode: GainNode | null = null;
   private aiVolume = 0.2; // normal range: 0.0 - 1.0
   private logOutput = false;
-  private session: any | null = null;
   private isRecording = false; // To be set by LiveInterfaceService
   private isSetupComplete = false; // To be set by LiveInterfaceService
   private profile = defaultProfile;
@@ -65,18 +66,13 @@ export class ConversationAudioService {
     this.profile = profile;
   }
 
-  /**
-   * Initializes the ConversationAudioService with a profile.
-   * @param profile The active profile settings used for audio configuration.
-   */
-
-  public setSession(session: any | null) {
-    this.session = session;
+  public setInputSampleRate(sampleRate: number) {
+    this.inputSampleRate = sampleRate;
   }
 
   /**
-   * Sets the active GenAI session instance used for realtime input/output.
-   * @param session The Session object from the GenAI client, or null to clear.
+   * Initializes the ConversationAudioService with a profile.
+   * @param profile The active profile settings used for audio configuration.
    */
 
   public setIsRecording(isRecording: boolean) {
@@ -306,6 +302,13 @@ export class ConversationAudioService {
    * Starts recording microphone input.
    */
   async startMicrophone(): Promise<void> {
+    if (this.micStream || this.audioWorkletNode) {
+      console.log(
+        '[ConversationAudioService] Microphone is already actively capturing. Ignoring duplicate start request.',
+      );
+      return;
+    }
+
     if (!this.aiAudioContext) {
       this.onAudioSystemError?.('Audio system not ready.');
       return;
@@ -350,7 +353,7 @@ export class ConversationAudioService {
       this.startSpeechDetectionLoop();
       this.audioWorkletNode = new AudioWorkletNode(this.aiAudioContext, 'audio-processor', {
         processorOptions: {
-          targetSampleRate: TARGET_SAMPLE_RATE,
+          targetSampleRate: this.inputSampleRate,
           bufferSize: WORKLET_BUFFER_SIZE,
         },
       });
@@ -368,23 +371,17 @@ export class ConversationAudioService {
 
   private onAudioWorkletMessage(event: MessageEvent) {
     if (event.data.pcmData) {
-      if (!this.session) {
-        console.warn(
-          '[ConversationAudioService] Worklet produced pcmData but session is null. Dropping audio until session is set.',
-        );
-        return;
-      }
       if (!this.isRecording) {
         console.warn(
           '[ConversationAudioService] Worklet produced pcmData but isRecording is false. Dropping audio.',
         );
         return;
       }
-      // If we reach here, session and recording are available
+      // If we reach here, recording is active
       // todo
       // console.log('[ConversationAudioService] Forwarding pcmData to onAudioDataReady.');
     }
-    if (event.data.pcmData && this.session && this.isRecording) {
+    if (event.data.pcmData && this.isRecording) {
       const pcmArrayBuffer = event.data.pcmData as ArrayBuffer;
       if (pcmArrayBuffer.byteLength === 0) {
         return;
@@ -444,6 +441,17 @@ export class ConversationAudioService {
         this.speechDetectionDataArray.reduce((sum, val) => sum + Math.abs(val - 128), 0) /
         this.speechDetectionDataArray.length;
       const now = performance.now();
+      
+      // Emit the audio level for UI (0-100 scale)
+      if (this.onInputLevelChange) {
+        let level = 0;
+        if (avg > 1) { // Apply a small noise gate
+          // Scale it up significantly to make the UI responsive
+          level = Math.min(100, (avg / 128) * 100 * 3.0); 
+        }
+        this.onInputLevelChange(level);
+      }
+
       if (avg > this.speechDetectionSensitivity) {
         this.belowThresholdStart = null;
         if (this.aboveThresholdStart === null) this.aboveThresholdStart = now;
@@ -524,6 +532,7 @@ export class ConversationAudioService {
   async playNextInQueue(): Promise<void> {
     if (this.aiAudioQueue.length === 0) {
       this._isPlayingAIaudio = false;
+      this.currentPlaybackSource = null;
       this.onPlaybackStopped?.();
       return;
     }
@@ -564,6 +573,7 @@ export class ConversationAudioService {
       audioBuffer.copyToChannel(float32Array, 0);
       const source = this.aiAudioContext.createBufferSource();
       source.buffer = audioBuffer;
+      this.currentPlaybackSource = source;
       // Connect the source to the gainNode instead of directly to the destination
       if (this.gainNode) {
         source.connect(this.gainNode);
@@ -575,6 +585,10 @@ export class ConversationAudioService {
       source.start();
       this.onPlaybackStarted?.();
       source.onended = () => {
+        if (this.currentPlaybackSource !== source) {
+          return;
+        }
+        this.currentPlaybackSource = null;
         this.playNextInQueue();
       };
     } catch (error) {
@@ -637,8 +651,22 @@ export class ConversationAudioService {
    * Clears the audio playback queue and stops any ongoing playback.
    */
   clearAudioQueueAndStopPlayback() {
+    if (this.audioQueueTimer) {
+      clearTimeout(this.audioQueueTimer);
+      this.audioQueueTimer = null;
+    }
+    this.jitterBuffer = [];
     this.aiAudioQueue = [];
+    this._isBuffering = true;
+    this.playbackStartTime = null;
+    if (this.currentPlaybackSource) {
+      this.currentPlaybackSource.onended = null;
+      this.currentPlaybackSource.stop();
+      this.currentPlaybackSource.disconnect();
+      this.currentPlaybackSource = null;
+    }
     this._isPlayingAIaudio = false;
+    this.onPlaybackStopped?.();
   }
 
   private updateIsPlayingAIaudioState(isPlayingAIaudio: boolean) {

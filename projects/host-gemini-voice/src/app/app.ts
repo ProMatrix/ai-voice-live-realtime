@@ -101,13 +101,6 @@ export class App implements OnInit {
     localStorage.setItem(this.profile.profile_id + 'isTranscriptionOn', JSON.stringify(value));
   }
 
-  showSidePanel(): boolean {
-    if (this.profile.show_side_panel !== undefined) {
-      return this.profile.show_side_panel;
-    }
-    return true;
-  }
-
   showUploadButton(): boolean {
     if (
       this.profile.pdf_upload &&

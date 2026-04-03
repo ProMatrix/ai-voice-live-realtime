@@ -1,6 +1,11 @@
 import { IProfile, IChatMessage } from './interfaces';
 import { InjectionToken } from '@angular/core';
 
+export interface ILiveAssistantSessionOptions {
+  systemInstructions?: string;
+  promptPreamble?: string;
+}
+
 /**
  * The standard connection state of the LLM Audio Assistant.
  */
@@ -20,7 +25,10 @@ export interface ILiveAssistantService {
   /**
    * Initializes the session using the unified profile settings.
    */
-  initializeSession(profile: IProfile): Promise<void>;
+  initializeSession(
+    profile: IProfile,
+    options?: ILiveAssistantSessionOptions,
+  ): Promise<void>;
 
   /**
    * Connects to the LLM backend (starts microphone worklets, opens sockets).
@@ -43,6 +51,16 @@ export interface ILiveAssistantService {
   sendAudio(audio: ArrayBuffer): void;
 
   /**
+   * Streams an image frame to the backend when screen sharing is active.
+   */
+  sendImage(imageData: { base64: string; mimeType: string }): void;
+
+  /**
+   * Returns the PCM sample rate expected by the backend for microphone input.
+   */
+  getInputAudioSampleRate(): number;
+
+  /**
    * Subscribes to changes in the overall connection state.
    */
   onConnectionStatusChange(callback: (status: ConnectionState) => void): void;
@@ -51,6 +69,11 @@ export interface ILiveAssistantService {
    * Subscribes to incoming audio volume levels (for visualizers).
    */
   onAudioLevelChange(callback: (level: number) => void): void;
+
+  /**
+   * Subscribes to incoming audio data chunks from the assistant.
+   */
+  onAudioReceived(callback: (audio: ArrayBuffer) => void): void;
 
   /**
    * Subscribes to completed or streaming text messages.

@@ -3,9 +3,9 @@ import {
   IProfile,
   ConnectionState,
   ILiveAssistantService,
+  ILiveAssistantSessionOptions,
   IChatMessage,
   IVoiceAssistantConfig,
-  ConversationAudioService,
 } from 'llm-common';
 import {
   VoiceLiveClient,
@@ -17,6 +17,8 @@ import {
   type SessionContext,
 } from '@azure/ai-voicelive';
 import { AzureKeyCredential } from '@azure/core-auth';
+
+const AZURE_INPUT_AUDIO_SAMPLE_RATE = 24000;
 
 @Injectable({
   providedIn: 'root',
@@ -32,15 +34,20 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
   private _connectionCallback: ((status: ConnectionState) => void) | null = null;
   private _messageCallback: ((msg: IChatMessage, isStreaming?: boolean) => void) | null = null;
   private _errorCallback: ((err: string) => void) | null = null;
+  private _audioReceivedCallback: ((audio: ArrayBuffer) => void) | null = null;
 
   // Callbacks used by LiveInterfaceService
-  public onAudioReceived: ((audio: ArrayBuffer) => void) | null = null;
   public onTranscriptionReceived: ((text: string) => void) | null = null;
 
-  constructor(private conversationAudioService: ConversationAudioService) {}
+  constructor() {}
 
-  public async initializeSession(profile: IProfile): Promise<void> {
+  public async initializeSession(
+    profile: IProfile,
+    options?: ILiveAssistantSessionOptions,
+  ): Promise<void> {
     this.profile = profile;
+    this.systemInstructions = options?.systemInstructions?.trim() || '';
+    this.promptPreamble = options?.promptPreamble?.trim() || '';
     const defaultVoiceApiKey = '';
     const defaultVoiceApiEndpoint = '';
     const voiceApiKey = localStorage.getItem('voiceApiKey') ?? defaultVoiceApiKey;
@@ -124,7 +131,7 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
         );
 
         // Surface audio to the LiveInterfaceService, which forwards to ConversationAudioService.
-        this.onAudioReceived?.(buffer as ArrayBuffer);
+        this._audioReceivedCallback?.(buffer as ArrayBuffer);
       },
     };
   }
@@ -185,10 +192,6 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
           threshold: 0.5,
         },
       });
-
-      // Bind the session into the ConversationAudioService so microphone PCM can be forwarded.
-      this.conversationAudioService.setSession(this.session);
-
       console.log('[AzureVoiceLiveService] Connected to Azure Voice Live.');
     } catch (error) {
       console.error('[AzureVoiceLiveService] Failed to connect:', error);
@@ -262,6 +265,10 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
       .catch((error) => console.error('[AzureVoiceLiveService] sendAudio failed:', error));
   }
 
+  public getInputAudioSampleRate(): number {
+    return AZURE_INPUT_AUDIO_SAMPLE_RATE;
+  }
+
   public sendImage(_imageData: { base64: string; mimeType: string }) {
     // Image support can be added later; for now this is a placeholder.
   }
@@ -272,6 +279,9 @@ export class AzureLiveAssistantService implements ILiveAssistantService {
   }
   public onAudioLevelChange(callback: (level: number) => void): void {
     // Implement audio worklet metering here
+  }
+  public onAudioReceived(callback: (audio: ArrayBuffer) => void): void {
+    this._audioReceivedCallback = callback;
   }
   public onMessageReceived(callback: (msg: IChatMessage, isStreaming?: boolean) => void): void {
     this._messageCallback = callback;

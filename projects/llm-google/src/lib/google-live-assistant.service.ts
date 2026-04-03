@@ -13,6 +13,7 @@ import {
   SESSION_EXPIRATION,
   TEN_MINUTES,
   TEN_SECONDS,
+  TARGET_SAMPLE_RATE,
 } from './constants';
 import { base64ToArrayBuffer, sleep } from './utils';
 import { defaultProfile } from 'llm-common';
@@ -21,6 +22,7 @@ import {
   IChatMessage,
   IDialogue,
   ILiveAssistantService,
+  ILiveAssistantSessionOptions,
   ConnectionState,
 } from 'llm-common';
 import { convertPdfFileToJpg, convertPdfUrlToJpg } from './pdf-2-jpgs';
@@ -39,6 +41,8 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
   private promptPreamble = '';
   private chatMessageHistory: IChatMessage[] = []; // To be managed by
   private dialogueUtterance: IDialogue[] | undefined;
+  private lastInputTranscript = '';
+  private lastOutputTranscript = '';
   private goAwayTimeLeft: string | undefined = ''; // New property to track GoAway time
   // THIS IS ONLY FOR TESTING/DEMO PURPOSES
   // Reconnect controls
@@ -79,13 +83,19 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
     this._resourceFileCollection = value;
   }
 
-  public async initializeSession(profile: IProfile): Promise<void> {
+  public async initializeSession(
+    profile: IProfile,
+    options?: ILiveAssistantSessionOptions,
+  ): Promise<void> {
     try {
       this.profile = profile;
-      this.systemInstructions = 'Generic System Config';
-      this.promptPreamble = 'Generic Preamble';
+      if (this.profile.clear_session_on_startup) {
+        this.geminiSession = null;
+      }
+      this.systemInstructions = options?.systemInstructions?.trim() || 'Generic System Config';
+      this.promptPreamble = options?.promptPreamble?.trim() || '';
       this.dialogueUtterance = this.parseDialogue(this.promptPreamble);
-      await this.connect();
+      await this.autostart();
     } catch (error) {
       console.error('Error loading profile:', error);
     }
@@ -194,8 +204,7 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
   }
 
   /**
-   * Automatically starts the application by checking for an API key
-   * and initializing the Generative AI client and system settings.
+   * initializing the Generative AI client and system settings.
    */
   async autostart() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -384,11 +393,35 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
 
     if (e.serverContent) {
       if (e.serverContent.inputTranscription && e.serverContent.inputTranscription.text) {
+        this.lastInputTranscript = e.serverContent.inputTranscription.text;
+        console.log('[GeminiSessionService] Input Transcription:', e.serverContent.inputTranscription.text);
         this.onInputTranscription?.(e.serverContent.inputTranscription.text);
+        if (this._messageCallback) {
+          this._messageCallback(
+            {
+              sender: 'user',
+              text: e.serverContent.inputTranscription.text,
+              timestamp: Date.now(),
+            },
+            true,
+          );
+        }
       }
 
       if (e.serverContent.outputTranscription?.text) {
+        this.lastOutputTranscript = e.serverContent.outputTranscription.text;
+        console.log('[GeminiSessionService] Output Transcription:', e.serverContent.outputTranscription.text);
         this.onOutputTranscription?.(e.serverContent.outputTranscription.text);
+        if (this._messageCallback) {
+          this._messageCallback(
+            {
+              sender: 'assistant',
+              text: e.serverContent.outputTranscription.text,
+              timestamp: Date.now(),
+            },
+            true,
+          );
+        }
       }
     }
 
@@ -417,7 +450,19 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
 
     // Handle turn completion
     if (e?.serverContent?.turnComplete) {
+      if (this._messageCallback && this.lastOutputTranscript.trim().length > 0) {
+        this._messageCallback(
+          {
+            sender: 'assistant',
+            text: this.lastOutputTranscript,
+            timestamp: Date.now(),
+          },
+          false,
+        );
+      }
       this.onTurnComplete?.();
+      this.lastInputTranscript = '';
+      this.lastOutputTranscript = '';
     }
   }
 
@@ -653,7 +698,13 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
   // ILiveAssistantService mapped methods
   public async sendMessage(text: string): Promise<void> {
     if (this.session) {
-      this.session.sendClientContent({ turns: text, turnComplete: true });
+      const turnContent: Content[] = [
+        {
+          role: 'user',
+          parts: [{ text: text }],
+        },
+      ];
+      this.session.sendClientContent({ turns: turnContent, turnComplete: true });
     }
   }
 
@@ -664,6 +715,19 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
         data: this.arrayBufferToBase64(audio),
       });
     }
+  }
+
+  public sendImage(imageData: { base64: string; mimeType: string }): void {
+    if (this.session) {
+      this.sendRealtimeInput({
+        mimeType: imageData.mimeType,
+        data: imageData.base64,
+      });
+    }
+  }
+
+  public getInputAudioSampleRate(): number {
+    return TARGET_SAMPLE_RATE;
   }
 
   private arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -680,6 +744,10 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
     this._connectionCallback = callback;
   }
 
+  public onAudioReceived(callback: (audio: ArrayBuffer) => void): void {
+    this.onAudioData = callback;
+  }
+
   public onAudioLevelChange(callback: (level: number) => void): void {
     // Audio worklet implementation mapping
   }
@@ -694,7 +762,13 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
 
   public sendClientContent(turns: string) {
     if (this.session) {
-      this.session.sendClientContent({ turns, turnComplete: true });
+      const turnContent: Content[] = [
+        {
+          role: 'user',
+          parts: [{ text: turns }],
+        },
+      ];
+      this.session.sendClientContent({ turns: turnContent, turnComplete: true });
     }
   }
 
