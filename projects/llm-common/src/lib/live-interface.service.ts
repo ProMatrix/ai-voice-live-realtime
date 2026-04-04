@@ -635,7 +635,8 @@ export class LiveInterfaceService {
   }
 
   private async pausePreRecordedPlayback(): Promise<void> {
-    const interruptedAssistantOutput = /* this.voiceAssistant.isPlayingOutputAudio */ false;
+    const interruptedAssistantOutput =
+      this.conversationAudioService.isPlayingAIaudio || this.outputTranscription.trim().length > 0;
     this.resumePreRecordedAfterInterruptedAssistant =
       interruptedAssistantOutput && !this.preRecordedAssistantTurnCompleting;
 
@@ -647,11 +648,13 @@ export class LiveInterfaceService {
     this.preRecordedAudioService.stopPlaybackImmediately();
 
     if (interruptedAssistantOutput) {
-      /* await this.voiceAssistant.interruptOutputPlayback(); */
+      this.pausedAssistantOutputPendingResume = true;
+      this.conversationAudioService.clearAudioQueueAndStopPlayback();
+
       if (this.outputMessageDiv && this.outputTranscription.trim().length > 0) {
         this.chatHistoryService.finalizeMessage(
           this.outputMessageDiv,
-          this.outputTranscription,
+          this.getPreferredAssistantFinalText(this.outputTranscription),
           'assistant',
         );
       }
@@ -665,6 +668,10 @@ export class LiveInterfaceService {
 
     this.audioLevel = 0;
     await this.waitForPreRecordedPlaybackFlush();
+
+    if (interruptedAssistantOutput) {
+      await this.waitForLiveAssistantPlaybackFlush();
+    }
 
     if (this.onServiceCallback) {
       setTimeout(() => {
@@ -1876,15 +1883,37 @@ export class LiveInterfaceService {
       this.inputFirstTimerId = undefined;
     }
 
-    // this is for the pre-recorded input to AI
-    // void this.voiceAssistant.sendMessage(clientContent);
+    const sendPreRecordedInput = () => {
+      void this.liveAssistantService.sendMessage(clientContent).catch((error) => {
+        console.error('[LiveInterfaceService] Error sending pre-recorded input:', error);
+      });
+    };
+
+    // This is for the pre-recorded input to AI.
+    sendPreRecordedInput();
 
     this.inputFirstTimerId = setTimeout(async () => {
+      this.inputFirstTimerId = undefined;
+
+      const assistantAlreadyResponding =
+        this.outputTranscription.trim().length > 0 ||
+        !!this.outputMessageDiv ||
+        this.conversationAudioService.isPlayingAIaudio;
+
+      if (
+        !this.isRecording ||
+        this.serviceMode === 'stopRecording' ||
+        this.serviceMode === 'pauseRecording' ||
+        assistantAlreadyResponding
+      ) {
+        return;
+      }
+
       // This timeout triggers if no output is received after input
       // within a reasonable time, to keep the dialogue flowing.
       // This seems only needed for the very first input in some cases.
       // And only necessary the first time, as subsequent inputs work fine.
-      // await this.voiceAssistant.sendMessage(clientContent);
+      sendPreRecordedInput();
     }, FIVE_SECONDS);
   }
   /**
@@ -1953,8 +1982,10 @@ export class LiveInterfaceService {
     }
 
     if (this.profile.pre_recorded && this.resumePreRecordedAfterInterruptedAssistant) {
+      // Releasing pause is enough for any in-flight pre-recorded playback loop.
+      // Do not force a new scripted step here, or pause/resume during an
+      // interrupted assistant turn will incorrectly advance to the next input.
       this.resumePreRecordedAfterInterruptedAssistant = false;
-      await this.preRecordedDialogue();
     }
   }
 
@@ -2719,6 +2750,12 @@ export class LiveInterfaceService {
     this.releaseHeldSpokenMessages();
     this.isMuted = false;
     this.serviceMode = 'startRecording';
+
+    if (this.profile.pre_recorded) {
+      this.pendingPausedUserText = '';
+      this.pausedUserResponsePendingSend = false;
+    }
+
     this.pausedAssistantOutputPendingResume = false;
     if (this.isAssistantFlushOnPauseProfile()) {
       // this.voiceAssistant.setOutputMuted(!this.isSpeakerOutputEnabled);
