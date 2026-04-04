@@ -1,5 +1,6 @@
 {
     "profile_title": "AI Developer Researcher",
+    "profile_id": "developer-researcher-session",
     "model_instructions": "developer-researcher/instructions.md",
     "dialogue_file": "",
     "voice_name": "Zephyr",

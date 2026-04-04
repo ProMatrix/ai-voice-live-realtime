@@ -139,6 +139,11 @@
                   "input": "shared-profiles/host-azure-voice",
                   "output": "assets/profiles"
                 },
+                {
+                  "glob": "pdf.worker.min.mjs",
+                  "input": "node_modules/pdfjs-dist/build",
+                  "output": "/assets"
+                },
               {
                 "glob": "**/*",
                 "input": "projects/host-azure-voice/public"
@@ -215,6 +220,11 @@
                   "glob": "**/*",
                   "input": "shared-profiles/host-gemini-voice",
                   "output": "assets/profiles"
+                },
+                {
+                  "glob": "pdf.worker.min.mjs",
+                  "input": "node_modules/pdfjs-dist/build",
+                  "output": "/assets"
                 },
               {
                 "glob": "**/*",

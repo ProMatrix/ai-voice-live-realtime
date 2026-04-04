@@ -51,6 +51,7 @@ export class ChatHistoryService {
 
   public resetChatHistory() {
     this.chatMessageHistory.length = 0;
+    this.savedMessages = null;
     this.emptyChatHistoryDiv();
   }
 

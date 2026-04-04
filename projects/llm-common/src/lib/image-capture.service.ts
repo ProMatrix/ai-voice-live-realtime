@@ -152,10 +152,16 @@ export class ImageCaptureService {
         this.snapshotIntervalId = null;
       }
 
+      this.stopPeriodicImageSending();
+
       if (this.stream) {
         this.stream.getTracks().forEach(this.stopTrack.bind(this));
         this.stream = null;
       }
+
+      this.imageDataUrl = null;
+      this.currentImageBase64 = null;
+      this.currentImageMimeType = null;
     } catch (error) {
       throw error;
     }
@@ -366,6 +372,13 @@ export class ImageCaptureService {
       return;
     }
 
+    if (!this.hasImageSource()) {
+      if (this.logOutput) {
+        console.log('[ImageCaptureService] Not starting periodic image sending because no image source is available.');
+      }
+      return;
+    }
+
     console.log('[ImageCaptureService] Starting periodic image sending interval.', {
       isRecording: this.isRecording,
       isSetupComplete: this.isSetupComplete,
@@ -377,6 +390,10 @@ export class ImageCaptureService {
       this.sendPeriodicImageData.bind(this),
       IMAGE_SEND_INTERVAL_MS,
     );
+  }
+
+  private hasImageSource(): boolean {
+    return !!this.stream || (!!this.currentImageBase64 && !!this.currentImageMimeType);
   }
 
   /**

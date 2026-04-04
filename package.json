@@ -8,6 +8,9 @@
     "edge-local-azure": "start msedge --new-window http://localhost:4201/assets/profiles/profile-showcase.html",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "test:image-share": "vitest run projects/llm-common/src/lib/image-sharing.regression.spec.ts",
+    "test:profiles": "vitest run --config vitest.profiles.config.ts",
+    "test:smoke": "vitest run projects/host-gemini-voice/src/app/app.smoke.spec.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -38,6 +41,7 @@
     "@angular/build": "^21.2.5",
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.6",
+    "@angular/platform-browser-dynamic": "^21.2.6",
     "jsdom": "^28.1.0",
     "ng-packagr": "^21.2.0",
     "prettier": "^3.8.1",

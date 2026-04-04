@@ -700,6 +700,13 @@ export class LiveInterfaceService {
 
     if (name === 'analyze_uploaded_pdf') {
       try {
+        if (this.usesNativePdfHandling()) {
+          return JSON.stringify({
+            error:
+              'This profile already loads its PDF content directly into the live assistant session. Ask the question normally instead of calling analyze_uploaded_pdf.',
+          });
+        }
+
         if (this.hasFoundryAgentProfile()) {
           const answer = await this.foundryAgentService.askQuestion(question);
           return JSON.stringify({ answer });
@@ -1255,13 +1262,46 @@ export class LiveInterfaceService {
   }
 
   public async setPdfFiles(files: Array<File>) {
-    this.pdfApiService.setUploadedPdfFiles(files);
+    const nativePdfAssistant = this.getNativePdfAssistant();
+    if (nativePdfAssistant?.setPdfFiles) {
+      nativePdfAssistant.setPdfFiles(files);
+    } else {
+      this.pdfApiService.setUploadedPdfFiles(files);
+    }
     this.clearGeneratedAppraisalSummaries();
   }
 
   public clearPdfFiles(): void {
-    this.pdfApiService.clearUploadedPdfFiles();
+    const nativePdfAssistant = this.getNativePdfAssistant();
+    if (nativePdfAssistant?.clearPdfFiles) {
+      nativePdfAssistant.clearPdfFiles();
+    } else {
+      this.pdfApiService.clearUploadedPdfFiles();
+    }
     this.clearGeneratedAppraisalSummaries();
+  }
+
+  private getNativePdfAssistant(): {
+    setPdfFiles?: (files: File[]) => void;
+    clearPdfFiles?: () => void;
+  } | null {
+    const liveAssistant = this.liveAssistantService as ILiveAssistantService & {
+      setPdfFiles?: (files: File[]) => void;
+      clearPdfFiles?: () => void;
+    };
+
+    if (
+      typeof liveAssistant.setPdfFiles !== 'function' &&
+      typeof liveAssistant.clearPdfFiles !== 'function'
+    ) {
+      return null;
+    }
+
+    return liveAssistant;
+  }
+
+  private usesNativePdfHandling(): boolean {
+    return !this.hasFoundryAgentProfile() && this.getNativePdfAssistant() !== null;
   }
 
   private isGeneratedSummaryQuestion(question: string): boolean {
@@ -2269,7 +2309,10 @@ export class LiveInterfaceService {
       });
     }
 
-    if (this.hasFoundryAgentProfile() || this.profile.pdf_file?.trim() || this.profile.pdf_upload) {
+    if (
+      this.hasFoundryAgentProfile() ||
+      ((this.profile.pdf_file?.trim() || this.profile.pdf_upload) && !this.usesNativePdfHandling())
+    ) {
       tools.push({
         type: 'function',
         name: 'analyze_uploaded_pdf',
@@ -2533,7 +2576,7 @@ export class LiveInterfaceService {
     if (this.hasFoundryAgentProfile()) {
       this.foundryAgentService.initialize(this.profile, this.getFoundryConfiguration());
     }
-    if (this.profile.pdf_file?.trim() || this.profile.pdf_upload) {
+    if ((this.profile.pdf_file?.trim() || this.profile.pdf_upload) && !this.usesNativePdfHandling()) {
       this.pdfApiService.initialize(this.profile, this.getPdfConfiguration());
     }
     if (this.hasVisionInstructions()) {
@@ -2772,6 +2815,9 @@ export class LiveInterfaceService {
   public async startScreenShare() {
     this.isSharing = true;
     await this.imageCaptureService.startScreenShare();
+    if (this.isRecording) {
+      this.imageCaptureService.startPeriodicImageSending();
+    }
     this.visionApiService.resetConversation();
   }
 
@@ -2854,6 +2900,10 @@ export class LiveInterfaceService {
 
   public async prepareProfilePdfForSession(): Promise<void> {
     if (!this.profile.pdf_file?.trim() && !this.profile.pdf_upload) {
+      return;
+    }
+
+    if (this.usesNativePdfHandling()) {
       return;
     }
 

@@ -75,6 +75,14 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
 
   constructor() {}
 
+  public setPdfFiles(files: Array<File>): void {
+    this.pdfFiles = [...files];
+  }
+
+  public clearPdfFiles(): void {
+    this.pdfFiles = [];
+  }
+
   get resourceFileCollection(): any[] {
     return this._resourceFileCollection;
   }

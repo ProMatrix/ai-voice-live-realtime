@@ -176,7 +176,7 @@
       <div class="chat-history-messages" id="chat-history-messages"></div>
     </div>
 
-    <div class="audio-levels">
+    <div class="audio-levels" [style.visibility]="profile.show_chatbots ? 'visible' : 'hidden'">
       <div class="audio-level">
           <div id="userbot-audio-level" class="level-meter mic-level">
           <svg class="level-circle" width="160" height="160" viewBox="0 0 120 120">
