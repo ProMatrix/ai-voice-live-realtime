@@ -1334,7 +1334,11 @@ export class LiveInterfaceService {
 
         if (isStreaming === false) {
           if (this.outputMessageDiv) {
-            this.chatHistoryService.finalizeMessage(this.outputMessageDiv, fullText, 'assistant');
+            this.chatHistoryService.finalizeMessage(
+              this.outputMessageDiv,
+              this.getPreferredAssistantFinalText(fullText),
+              'assistant',
+            );
             this.outputMessageDiv = null;
             this.outputTranscription = '';
           }
@@ -1478,24 +1482,29 @@ export class LiveInterfaceService {
     return true;
   }
 
+  private isSeamlessReconnect(): boolean {
+    return (this.liveAssistantService as { isAutoReconnecting?: boolean }).isAutoReconnecting === true;
+  }
+
   private async onSetupComplete() {
     console.log('[LiveInterfaceService] Setup complete. Ready to talk or Upload Image');
+    this.conversationAudioService.setIsSetupComplete(true);
     this.imageCaptureService.setIsSetupComplete(true);
     // If we intended to be recording before a disconnect, resume now
     if (this.resumeRecordingAfterReconnect) {
-      this.resumeRecordingAfterReconnect = false;
       console.log('[LiveInterfaceService] Resuming recording after reconnect...');
-      // Ensure ConversationAudioService has the new session bound before starting
       try {
-        // this.conversationAudioService.setSession(this.geminiSessionService.getSession());
         this.conversationAudioService.setIsRecording(true);
         this.imageCaptureService.setIsRecording(true);
+        this.isRecording = true;
       } catch (e) {
         console.warn(
           '[LiveInterfaceService] Error setting session on ConversationAudioService before resume:',
           e,
         );
       }
+
+      this.resumeRecordingAfterReconnect = false;
     }
 
     console.log('[LiveInterfaceService] onSetupComplete state:', {
@@ -1505,6 +1514,14 @@ export class LiveInterfaceService {
     });
 
     if (this.isRecording) {
+      const audioSystemReady = await this.conversationAudioService.initializeAudioSystem();
+      if (!audioSystemReady) {
+        console.warn('[LiveInterfaceService] Audio system failed to reinitialize after reconnect.');
+        this.cleanupAfterErrorOrClose(true);
+        return;
+      }
+
+      await this.conversationAudioService.startMicrophone();
       console.log('[LiveInterfaceService] Starting periodic image sending for active recording.');
       this.imageCaptureService.startPeriodicImageSending();
     } else if (this.imagePreview && this.imagePreview.src) {
@@ -1591,6 +1608,26 @@ export class LiveInterfaceService {
     }
   }
 
+  private getPreferredAssistantFinalText(fullText: string): string {
+    if (this.outputTranscription.length === 0) {
+      return fullText;
+    }
+
+    if (fullText.length === 0) {
+      return this.outputTranscription;
+    }
+
+    if (fullText.startsWith(this.outputTranscription)) {
+      return fullText;
+    }
+
+    if (this.outputTranscription.startsWith(fullText)) {
+      return this.outputTranscription;
+    }
+
+    return this.outputTranscription;
+  }
+
   private onAudioData(audioBuffer: any) {
     this.conversationAudioService.enqueueAudio(audioBuffer);
   }
@@ -1650,33 +1687,36 @@ export class LiveInterfaceService {
 
   private onClose(wasClean: boolean, code: number, reason: string) {
     let statusMsg = 'Disconnected.';
-    if (!wasClean && this.isRecording) {
+    const isSeamlessReconnect = this.isSeamlessReconnect();
+
+    if (!wasClean && this.isRecording && !isSeamlessReconnect) {
       statusMsg = `Disconnected unexpectedly (Code: ${code})`;
       console.error('[LiveInterfaceService] Status update:', statusMsg, true);
     } else if (code === 1000 && !this.isRecording) {
       statusMsg = 'Call ended.';
       console.log('[LiveInterfaceService] Status update:', statusMsg);
-    } else if (code !== 1000) {
+    } else if (code !== 1000 && !isSeamlessReconnect) {
       statusMsg = `Disconnected (Code: ${code})`;
       console.log('[LiveInterfaceService] Status update:', statusMsg);
-    } else {
+    } else if (!isSeamlessReconnect) {
       console.log('[LiveInterfaceService] Status update:', statusMsg);
     }
-    if (code !== 1000 || wasClean !== true) {
+
+    if (code !== 1000 || wasClean !== true || isSeamlessReconnect) {
       this.resumeRecordingAfterReconnect = this.isRecording; // Preserve recording state
+    }
 
-      // const message = `[LiveInterfaceService] WebSocket onclose: Code ${code}, Reason: ${reason}, WasClean: ${wasClean}`;
-      // alert(message);
+    if (this.serviceMode === 'pauseRecording' && this.isRecording) {
+      this.resumeRecordingAfterReconnect = true;
+    }
 
-      // Capture whether we were recording so we can resume after reconnect
-
-      // Only trigger the UI's pause/stop flow if we are NOT going to auto-resume recording
+    if (!isSeamlessReconnect && (code !== 1000 || wasClean !== true)) {
       if (!this.resumeRecordingAfterReconnect) {
-        //this.pauseRecordingButton?.click();
         this.stopRecordingButton?.click();
       }
     }
-    this.cleanupAfterErrorOrClose(false);
+
+    this.cleanupAfterErrorOrClose(false, isSeamlessReconnect);
   }
 
   get audioInterfacePlaying() {
@@ -2047,7 +2087,11 @@ export class LiveInterfaceService {
           // message in chat history and reset the transcription buffer.
           if (message.isStreaming === false) {
             if (this.outputMessageDiv) {
-              this.chatHistoryService.finalizeMessage(this.outputMessageDiv, fullText, 'assistant');
+              this.chatHistoryService.finalizeMessage(
+                this.outputMessageDiv,
+                this.getPreferredAssistantFinalText(fullText),
+                'assistant',
+              );
               this.outputMessageDiv = null;
               this.outputTranscription = '';
             }
@@ -2748,11 +2792,26 @@ export class LiveInterfaceService {
    * stops periodic image sending, and clears audio nodes and queues.
    * @param isErrorOrigin True when cleanup is triggered by an error origin.
    */
-  private cleanupAfterErrorOrClose(isErrorOrigin: boolean = false) {
+  private cleanupAfterErrorOrClose(
+    isErrorOrigin: boolean = false,
+    isSeamlessReconnect: boolean = false,
+  ) {
+    if (isSeamlessReconnect) {
+      this.conversationAudioService.setIsRecording(false);
+      this.conversationAudioService.setIsSetupComplete(false);
+      this.imageCaptureService.setIsRecording(false);
+      this.imageCaptureService.setIsSetupComplete(false);
+      this.imageCaptureService.stopPeriodicImageSending();
+      this.conversationAudioService.cleanupAudioNodes();
+      this.conversationAudioService.clearAudioQueueAndStopPlayback();
+      return;
+    }
+
     this.isRecording = false;
     this.isMuted = false;
     this.isSharing = false;
     this.conversationAudioService.setIsRecording(false);
+    this.conversationAudioService.setIsSetupComplete(false);
     this.imageCaptureService.setIsRecording(false);
     this.imageCaptureService.setIsSetupComplete(false);
     this.imageCaptureService.stopPeriodicImageSending();

@@ -393,7 +393,10 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
 
     if (e.serverContent) {
       if (e.serverContent.inputTranscription && e.serverContent.inputTranscription.text) {
-        this.lastInputTranscript = e.serverContent.inputTranscription.text;
+        this.lastInputTranscript = this.mergeTranscript(
+          this.lastInputTranscript,
+          e.serverContent.inputTranscription.text,
+        );
         console.log('[GeminiSessionService] Input Transcription:', e.serverContent.inputTranscription.text);
         this.onInputTranscription?.(e.serverContent.inputTranscription.text);
         if (this._messageCallback) {
@@ -409,7 +412,10 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
       }
 
       if (e.serverContent.outputTranscription?.text) {
-        this.lastOutputTranscript = e.serverContent.outputTranscription.text;
+        this.lastOutputTranscript = this.mergeTranscript(
+          this.lastOutputTranscript,
+          e.serverContent.outputTranscription.text,
+        );
         console.log('[GeminiSessionService] Output Transcription:', e.serverContent.outputTranscription.text);
         this.onOutputTranscription?.(e.serverContent.outputTranscription.text);
         if (this._messageCallback) {
@@ -465,6 +471,22 @@ export class GoogleLiveAssistantService implements ILiveAssistantService {
       this.lastInputTranscript = '';
       this.lastOutputTranscript = '';
     }
+  }
+
+  private mergeTranscript(currentText: string, incomingText: string): string {
+    if (incomingText.length === 0) {
+      return currentText;
+    }
+
+    if (currentText.length === 0 || incomingText.startsWith(currentText)) {
+      return incomingText;
+    }
+
+    if (currentText.startsWith(incomingText)) {
+      return currentText;
+    }
+
+    return `${currentText}${incomingText}`;
   }
 
   private onSessionError(errorEvent: ErrorEvent) {
