@@ -287,6 +287,35 @@
   display: block;
 }
 
+.spoken-message-copy-button {
+  display: none;
+  border: 1px solid rgba(224, 247, 250, 0.35);
+  border-radius: 999px;
+  background-color: rgba(224, 247, 250, 0.16);
+  color: #e0f7fa;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.spokenMessage.show-copy-actions .spoken-message-copy-button {
+  display: block;
+}
+
+.user-copy-button {
+  margin-right: auto;
+}
+
+.ai-copy-button {
+  margin-left: auto;
+}
+
+.spoken-message-copy-button:hover {
+  background-color: rgba(224, 247, 250, 0.28);
+}
+
 #userSpokenMessage {
     background-color: #333; /* Light blue for left user */
     color: #e0f7fa;

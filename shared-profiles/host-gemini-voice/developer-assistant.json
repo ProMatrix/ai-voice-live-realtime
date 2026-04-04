@@ -1,5 +1,6 @@
 {
     "profile_title": "AI Developer Assistant",
+    "profile_id": "developer-assistant-session",
     "model_instructions": "developer-assistant/instructions.md",
     "dialogue_file": "",
     "voice_name": "Zephyr",

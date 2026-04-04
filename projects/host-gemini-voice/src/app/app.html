@@ -264,10 +264,32 @@
     }
 
     <div id="session-title" class="session-title long-fade-out">AI Realtime</div>
-    <div id="userSpokenMessage" class="spokenMessage fade-in">
+    <div
+      id="userSpokenMessage"
+      class="spokenMessage fade-in"
+      [class.show-copy-actions]="showSpokenCopyButtons"
+    >
+      <button
+        type="button"
+        class="spoken-message-copy-button user-copy-button"
+        (click)="copySpokenMessage('user', $event)"
+      >
+        Copy to Clipboard
+      </button>
       <span id="userSpokenMessageText" class="spoken-message-text"></span>
     </div>
-    <div id="aiSpokenMessage" class="spokenMessage fade-in">
+    <div
+      id="aiSpokenMessage"
+      class="spokenMessage fade-in"
+      [class.show-copy-actions]="showSpokenCopyButtons"
+    >
+      <button
+        type="button"
+        class="spoken-message-copy-button ai-copy-button"
+        (click)="copySpokenMessage('ai', $event)"
+      >
+        Copy to Clipboard
+      </button>
       <span id="aiSpokenMessageText" class="spoken-message-text"></span>
     </div>
 

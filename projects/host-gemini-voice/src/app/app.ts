@@ -70,6 +70,7 @@ export class App implements OnInit {
   isVideoHidden = false; // Video is showing by default
   isVideoOn = true;
   isAudioOn = true;
+  showSpokenCopyButtons = false;
 
   private systemInstructions = '';
   private dataInstructions = '';
@@ -263,6 +264,25 @@ export class App implements OnInit {
       this.progressRingDiv.style.strokeDashoffset = offset.toString();
       // Update the text value
       this.progressTextDiv.textContent = file.toString();
+    }
+  }
+
+  async copySpokenMessage(messageType: 'user' | 'ai', event: MouseEvent) {
+    event.stopPropagation();
+
+    const messageTextElement = document.getElementById(
+      messageType === 'user' ? 'userSpokenMessageText' : 'aiSpokenMessageText',
+    );
+    const messageText = messageTextElement?.textContent?.trim() ?? '';
+
+    if (!messageText) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(messageText);
+    } catch (error) {
+      console.error(`[App] Failed to copy ${messageType} spoken message:`, error);
     }
   }
 
@@ -671,7 +691,15 @@ export class App implements OnInit {
    * @param activeButton The button element that was activated.
    */
   updateRecordingButtons(activeButton: HTMLButtonElement) {
-    this.recordingButtons.forEach((button) => this.processRecordingButton(button, activeButton));
+    this.recordingButtons.forEach((button) => {
+      if (button === activeButton) {
+        button.classList.add('active');
+        button.setAttribute('disabled', 'true');
+      } else {
+        button.classList.remove('active');
+        button.removeAttribute('disabled');
+      }
+    });
 
     // Disable the pause button if the stop button is active
     if (activeButton.id === 'stopRecordingButton') {
@@ -680,6 +708,8 @@ export class App implements OnInit {
         pauseButton.setAttribute('disabled', 'true');
       }
     }
+
+    void this.processRecordingButton(activeButton, activeButton);
   }
 
   private async processRecordingButton(button: HTMLButtonElement, activeButton: HTMLButtonElement) {
@@ -687,20 +717,35 @@ export class App implements OnInit {
     if (button === activeButton) {
       switch (button.id) {
         case 'stopRecordingButton':
+          this.showSpokenCopyButtons = false;
           if (this.liveInterface.isRecording || this.liveInterface.isMuted)
-            this.liveInterface.stopRecording();
+            await this.liveInterface.stopRecording();
           this.liveInterface.serviceMode = 'stopRecording';
           // this.pauseSessionTimer();
           if (!this.profile.pre_recorded) this.trashButton?.removeAttribute('disabled');
           break;
         case 'pauseRecordingButton':
+          this.showSpokenCopyButtons = true;
           this.liveInterface.serviceMode = 'pauseRecording';
-          this.liveInterface.muteMicrophone();
+          await this.liveInterface.muteMicrophone();
+          const pausedUserText = this.liveInterface.getPendingPausedUserText();
+          if (pausedUserText) {
+            this.showPanel('text-input');
+            setTimeout(() => {
+              const textInput = document.getElementById('textInput') as HTMLTextAreaElement | null;
+              if (textInput) {
+                textInput.value = pausedUserText;
+                textInput.focus();
+                textInput.setSelectionRange(textInput.value.length, textInput.value.length);
+              }
+            }, 0);
+          }
           // this.pauseSessionTimer();
           if (!this.profile.pre_recorded) this.trashButton?.removeAttribute('disabled');
           break;
         case 'startPlaybackButton':
         case 'startRecordButton':
+          this.showSpokenCopyButtons = false;
           if (this.liveInterface.isMuted) {
             // is on pause
             this.liveInterface.unmuteMicrophone();
@@ -760,6 +805,9 @@ export class App implements OnInit {
             this.setProgress(0, 0);
           }
           if (this.liveInterface.serviceMode === 'stopRecording') {
+            if (this.profile.clear_session_on_startup) {
+              this.liveInterface.restartSession(true);
+            }
             this.resetAndStartSessionTimer();
           } else {
             // Resuming from pause
@@ -773,13 +821,6 @@ export class App implements OnInit {
           this.trashButton?.setAttribute('disabled', 'true');
           break;
       }
-      button.classList.add('active');
-      button.setAttribute('disabled', 'true'); // Disable the active button
-    }
-    // This is not the active button
-    else {
-      button.classList.remove('active');
-      button.removeAttribute('disabled'); // Enable other buttons
     }
   }
 

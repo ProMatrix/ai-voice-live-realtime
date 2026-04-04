@@ -105,6 +105,9 @@ export class LiveInterfaceService {
   private isSpokenMessageHoldActive = false;
   private inputTranscription = '';
   private outputTranscription = '';
+  private pendingPausedUserText = '';
+  private pausedAssistantOutputPendingResume = false;
+  private pausedUserResponsePendingSend = false;
   // If true, attempt to resume recording automatically after reconnect
   private resumeRecordingAfterReconnect = false;
   private inputMessageDiv: HTMLDivElement | null = null;
@@ -316,9 +319,14 @@ export class LiveInterfaceService {
   }
 
   private isAssistantFlushOnPauseProfile(): boolean {
-    return ['developer-assistant-session', 'appraisal-session', 'ai-tutor-gmail-session'].includes(
-      this.profile.profile_id,
-    );
+    const profileKey = this.profile.profile_id?.trim() || this.profile.profile_file?.trim() || '';
+
+    return [
+      'developer-assistant-session',
+      'developer-assistant',
+      'appraisal-session',
+      'ai-tutor-gmail-session',
+    ].includes(profileKey);
   }
 
   private getDiscussionAgents(): IDiscussionAgentProfile[] {
@@ -600,29 +608,27 @@ export class LiveInterfaceService {
   }
 
   private async pauseLiveAssistantPlayback(): Promise<void> {
-    const interruptedAssistantOutput = /* this.voiceAssistant.isPlayingOutputAudio */ false;
+    const interruptedAssistantOutput =
+      this.conversationAudioService.isPlayingAIaudio || this.outputTranscription.trim().length > 0;
 
     if (!interruptedAssistantOutput) {
       this.outputAudioLevel = 0;
       return;
     }
 
-    /* await this.voiceAssistant.interruptOutputPlayback(); */
+    this.pausedAssistantOutputPendingResume = true;
+    this.conversationAudioService.clearAudioQueueAndStopPlayback();
 
     if (this.outputMessageDiv && this.outputTranscription.trim().length > 0) {
       this.chatHistoryService.finalizeMessage(
         this.outputMessageDiv,
-        this.outputTranscription,
+        this.getPreferredAssistantFinalText(this.outputTranscription),
         'assistant',
       );
     }
 
     this.outputMessageDiv = null;
     this.outputTranscription = '';
-
-    if (this.aiSpokenMessageDiv && this.profile.show_chatbots) {
-      this.fadeOutSpokenMessage(this.aiSpokenMessageDiv, 'ai');
-    }
 
     this.outputAudioLevel = 0;
     await this.waitForLiveAssistantPlaybackFlush();
@@ -976,6 +982,12 @@ export class LiveInterfaceService {
   }
 
   handleTextFromUser(text: string, forwardToAssistant: boolean = true) {
+    if (forwardToAssistant) {
+      this.pendingPausedUserText = '';
+      this.pausedUserResponsePendingSend = false;
+      this.pausedAssistantOutputPendingResume = false;
+    }
+
     this.renderUserText(text);
 
     if (forwardToAssistant) {
@@ -1300,6 +1312,10 @@ export class LiveInterfaceService {
     return this.chatHistoryService.getChatHistory().length;
   }
 
+  public getPendingPausedUserText(): string {
+    return this.pendingPausedUserText;
+  }
+
   private setupServiceCallbacks() {
     this.preRecordedAudioService.onLevelChange = (level: number) => {
       if (this.profile.pre_recorded) {
@@ -1368,6 +1384,10 @@ export class LiveInterfaceService {
 
     // LiveAssistantService Audio Callback
     this.liveAssistantService.onAudioReceived((audio: ArrayBuffer) => {
+      if (this.pausedAssistantOutputPendingResume || this.pausedUserResponsePendingSend) {
+        return;
+      }
+
       this.conversationAudioService.playAudio(audio);
     });
 
@@ -1539,6 +1559,11 @@ export class LiveInterfaceService {
   }
 
   private async onInputTranscription(text: string) {
+    if (this.pausedUserResponsePendingSend && !this.isMuted && this.serviceMode === 'startRecording') {
+      this.pendingPausedUserText = '';
+      this.pausedUserResponsePendingSend = false;
+    }
+
     // New user speech coming in: cancel any pending fade-out of the user bubble
     if (this.userSpokenFadeTimeoutId) {
       clearTimeout(this.userSpokenFadeTimeoutId);
@@ -1579,6 +1604,10 @@ export class LiveInterfaceService {
   }
 
   private async onOutputTranscription(text: string) {
+    if (this.pausedAssistantOutputPendingResume || this.pausedUserResponsePendingSend) {
+      return;
+    }
+
     if (this.aiSpokenFadeTimeoutId) {
       clearTimeout(this.aiSpokenFadeTimeoutId);
       this.aiSpokenFadeTimeoutId = undefined;
@@ -1629,6 +1658,10 @@ export class LiveInterfaceService {
   }
 
   private onAudioData(audioBuffer: any) {
+    if (this.pausedAssistantOutputPendingResume) {
+      return;
+    }
+
     this.conversationAudioService.enqueueAudio(audioBuffer);
   }
 
@@ -2177,10 +2210,8 @@ export class LiveInterfaceService {
   }
 
   private async handleDisconnect(): Promise<void> {
-    // Maybe not needed with Azure Voice Live.
     try {
-      // await this.voiceAssistant.disconnect();
-      // await this.userAssistant.disconnect();
+      await this.liveAssistantService.disconnect();
     } catch (error) {}
   }
 
@@ -2492,19 +2523,36 @@ export class LiveInterfaceService {
    * @param resetSession If true, clears persisted chat history and stored session handle.
    */
   public resetRecordingCycleCount() {
-    // this.geminiSessionService.resetRecordingCycleCount();
+    const assistantWithReset = this.liveAssistantService as ILiveAssistantService & {
+      resetRecordingCycleCount?: () => void;
+    };
+    assistantWithReset.resetRecordingCycleCount?.();
   }
 
   public restartSession(resetSession?: boolean) {
     if (resetSession) {
       localStorage.removeItem(`${this.profile?.profile_title} - geminiMessages`);
       localStorage.removeItem(this.profile?.profile_id + 'geminiSession');
+      localStorage.removeItem(this.profile?.profile_id + 'sessionLatestTicks');
       this.chatHistoryService.resetChatHistory();
       this.foundryAgentService.resetConversation();
-      // this.geminiSessionService.resetChatHistory();
+      const assistantWithHistoryReset = this.liveAssistantService as ILiveAssistantService & {
+        resetChatHistory?: () => void;
+      };
+      assistantWithHistoryReset.resetChatHistory?.();
     } else {
       this.chatHistoryService.loadChatHistory();
     }
+  }
+
+  private clearPersistedLiveSessionHandle(): void {
+    const profileId = this.profile?.profile_id?.trim();
+    if (!profileId) {
+      return;
+    }
+
+    localStorage.removeItem(profileId + 'geminiSession');
+    localStorage.removeItem(profileId + 'sessionLatestTicks');
   }
 
   /**
@@ -2622,6 +2670,26 @@ export class LiveInterfaceService {
     this.audioLevel = 0;
     this.outputAudioLevel = 0;
 
+    if (this.inputTranscriptionTimerId) {
+      clearTimeout(this.inputTranscriptionTimerId);
+      this.inputTranscriptionTimerId = undefined;
+    }
+
+    const pausedUserText =
+      this.inputTranscription.trim() || this.getSpokenMessageText(this.userSpokenMessageDiv);
+    if (pausedUserText) {
+      if (!this.inputMessageDiv) {
+        this.inputMessageDiv = this.chatHistoryService.createRealtimeMessage('user');
+      }
+
+      this.chatHistoryService.updateChatHistoryDiv(this.inputMessageDiv, pausedUserText);
+      this.chatHistoryService.finalizeMessage(this.inputMessageDiv, pausedUserText, 'user');
+      this.inputMessageDiv = null;
+      this.inputTranscription = '';
+      this.pendingPausedUserText = pausedUserText;
+      this.pausedUserResponsePendingSend = true;
+    }
+
     if (this.profile.pre_recorded) {
       await this.pausePreRecordedPlayback();
     } else if (this.isAssistantFlushOnPauseProfile()) {
@@ -2651,6 +2719,7 @@ export class LiveInterfaceService {
     this.releaseHeldSpokenMessages();
     this.isMuted = false;
     this.serviceMode = 'startRecording';
+    this.pausedAssistantOutputPendingResume = false;
     if (this.isAssistantFlushOnPauseProfile()) {
       // this.voiceAssistant.setOutputMuted(!this.isSpeakerOutputEnabled);
     }
@@ -2717,6 +2786,7 @@ export class LiveInterfaceService {
     }
 
     this.isRecording = true;
+    this.pausedAssistantOutputPendingResume = false;
     this.conversationAudioService.setIsRecording(true);
     this.imageCaptureService.setIsRecording(true);
     this.imageCaptureService.setIsSetupComplete(false);
@@ -2760,9 +2830,14 @@ export class LiveInterfaceService {
    * stops periodic image sending and closes the session if present.
    */
   public async stopRecording() {
-    if (!this.isRecording) {
+    if (!this.isRecording && !this.isMuted) {
       return;
     }
+
+    this.pendingPausedUserText = '';
+    this.pausedAssistantOutputPendingResume = false;
+    this.pausedUserResponsePendingSend = false;
+    this.serviceMode = 'stopRecording';
 
     if (this.isDualLiveDiscussionProfile()) {
       this.releaseHeldSpokenMessages();
@@ -2777,14 +2852,48 @@ export class LiveInterfaceService {
       return;
     }
 
+    if (this.userSpokenMessageDiv && this.aiSpokenMessageDiv) {
+      await this.updateSpokenMessage('', this.userSpokenMessageDiv);
+      await this.updateSpokenMessage('', this.aiSpokenMessageDiv);
+    }
+
+    this.conversationAudioService.clearAudioQueueAndStopPlayback();
+
+    if (this.inputMessageDiv) {
+      const finalUserText = this.inputTranscription.trim() || this.getSpokenMessageText(this.userSpokenMessageDiv);
+      if (finalUserText) {
+        this.chatHistoryService.finalizeMessage(this.inputMessageDiv, finalUserText, 'user');
+      }
+      this.inputMessageDiv = null;
+    }
+
+    if (this.outputMessageDiv) {
+      const finalAssistantText = this.getPreferredAssistantFinalText(this.outputTranscription).trim();
+      if (finalAssistantText) {
+        this.chatHistoryService.finalizeMessage(this.outputMessageDiv, finalAssistantText, 'assistant');
+      }
+      this.outputMessageDiv = null;
+    }
+
     this.releaseHeldSpokenMessages();
     this.isRecording = false;
+    this.isMuted = false;
     this.conversationAudioService.setIsRecording(false);
+    this.imageCaptureService.setIsRecording(false);
     this.audioLevel = 0;
+    this.outputAudioLevel = 0;
     this.dialogueIndex = 0;
     this.dialogueInput = '';
+    this.inputTranscription = '';
     this.outputTranscription = '';
-    // await this.voiceAssistant.disconnect();
+
+    this.imageCaptureService.stopPeriodicImageSending();
+    this.conversationAudioService.stopMicrophone();
+    this.conversationAudioService.setIsSetupComplete(false);
+    this.imageCaptureService.setIsSetupComplete(false);
+    await this.handleDisconnect();
+    this.clearPersistedLiveSessionHandle();
+    this.resetRecordingCycleCount();
   }
 
   /**
